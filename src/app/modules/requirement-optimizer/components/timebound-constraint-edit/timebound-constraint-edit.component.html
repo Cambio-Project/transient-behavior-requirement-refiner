@@ -1,0 +1,72 @@
+<mat-card>
+	<mat-card-title>
+		<!-- <div *ngIf="timebound?.getSpecificationAsSEL(); then hasTimebound else noTimebound"></div>
+		<ng-template #hasTimebound>{{ timebound?.getSpecificationAsSEL() }}.</ng-template>
+		<ng-template #noTimebound><span style="color: #ccc;">no timebound constraint</span></ng-template> -->
+		<span [style.color]="timeboundSEL === 'no timebound constraint' ? '#ccc' : '#000'">{{ timeboundSEL }}</span>
+		<button (click)="onClickRefinement()" mat-icon-button color="primary" aria-label="Requirement Refinement" style="position: absolute; top: 8px; right: 64px;">
+			<mat-icon>settings_suggest</mat-icon>
+		</button>
+		<button mat-icon-button (click)="editFormExpaneded = !editFormExpaneded" style="position: absolute; top: 8px; right: 12px;" aria-label="Edit">
+			<mat-icon>edit</mat-icon>
+		</button>
+	</mat-card-title>
+	<mat-card-content *ngIf="editFormExpaneded" style="margin-top: 24px;">
+		<form [formGroup]="timeboundForm">
+			<mat-radio-group formControlName="type" aria-label="Select a Timebound">
+				<table>
+					<tr>
+						<td>
+							<mat-radio-button value="unconstrained">unconstrained</mat-radio-button>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<mat-radio-button value="within">within</mat-radio-button>
+						</td>
+						<td [style.visibility]="timeboundForm.value.type === 'within' ? 'visible' : 'hidden' ">
+							<mat-form-field appearance="fill">
+								<input matInput formControlName="end" type="number" placeholder="time units">
+							</mat-form-field>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<mat-radio-button value="after">after</mat-radio-button>
+						</td>
+						<td [style.visibility]="timeboundForm.value.type === 'after' ? 'visible' : 'hidden' ">
+							<mat-form-field appearance="fill">
+								<input matInput formControlName="start" type="number" placeholder="time units">
+							</mat-form-field>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<mat-radio-button value="between">between</mat-radio-button>
+						</td>
+						<td [style.visibility]="timeboundForm.value.type === 'between' ? 'visible' : 'hidden' ">
+							<mat-form-field appearance="fill">
+								<input matInput formControlName="start" type="number" placeholder="time units">
+							</mat-form-field>
+						</td>
+						<td [style.visibility]="timeboundForm.value.type === 'between' ? 'visible' : 'hidden' ">and</td>
+						<td [style.visibility]="timeboundForm.value.type === 'between' ? 'visible' : 'hidden' ">
+							<mat-form-field appearance="fill">
+								<input matInput formControlName="end" type="number" placeholder="time units">
+							</mat-form-field>
+						</td>
+					</tr>
+					<!-- <tr>
+						<td>Unit</td>
+						<td>
+							<mat-form-field appearance="fill">
+								<input matInput formControlName="timeUnit" placeholder="time unit">
+							</mat-form-field>
+						</td>
+					</tr> -->
+				</table>
+			</mat-radio-group>
+		</form>
+
+	</mat-card-content>
+</mat-card>

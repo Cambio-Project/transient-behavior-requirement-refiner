@@ -1,0 +1,37 @@
+<ng-container *ngIf="response">
+	<div class="row" style="margin-bottom: 15px;">
+		<div class="col-md-auto">
+			<mat-card>
+				<mat-card-title>{{ property?.getScope() + ', if' }}</mat-card-title>
+			</mat-card>
+		</div>
+		<div class="col">
+			<app-predicate-edit [dataset]="dataset" [event]="response.getP()" (eventChange)="onPropertyChange()"></app-predicate-edit>
+		</div>
+		<div class="col-md-auto">
+			<mat-card>
+				<mat-card-title>[has occurred]</mat-card-title>
+			</mat-card>
+		</div>
+	</div>
+	<div class="row" style="margin-bottom: 15px;">
+		<div class="col-md-auto">
+			<mat-card>
+				<mat-card-title>then in response</mat-card-title>
+			</mat-card>
+		</div>
+		<div class="col-md">
+			<app-predicate-edit [dataset]="dataset" [event]="response.getS()" (eventChange)="onPropertyChange()"></app-predicate-edit>
+		</div>
+		<div class="col-md-auto">
+			<mat-card>
+				<mat-card-title>[eventually holds]</mat-card-title>
+			</mat-card>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6">
+			<app-timebound-constraint-edit [dataset]="dataset" [property]="property" [timebound]="response.getSTimeBound()" (timeboundChange)="onPropertyChange()"></app-timebound-constraint-edit>
+		</div>
+	</div>
+</ng-container>

@@ -1,0 +1,51 @@
+<div class="row">
+	<div class="col-md-4">
+		<h2>Pattern</h2>
+		<form [formGroup]="patternSelectForm">
+			<mat-form-field class="full-width text-capitalize" appearance="fill">
+				<mat-label>Scope</mat-label>
+				<mat-select formControlName="scope" [compareWith]="compareScope">
+					<mat-option *ngFor="let scope of SCOPE_OPTIONS" [value]="scope" class="text-capitalize">
+						{{ scope.getSpecificationAsSEL() }}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+			<mat-form-field class="full-width text-capitalize" appearance="fill">
+				<mat-label>Category</mat-label>
+				<mat-select formControlName="category" [compareWith]="compareCategory">
+					<mat-option *ngFor="let category of CATEGORY_OPTIONS | categoryFilter:patterns:patternSelectForm.value.scope" [value]="category" class="text-capitalize">
+						{{ category.name }}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+			<mat-form-field class="full-width text-capitalize" appearance="fill">
+				<mat-label>Pattern</mat-label>
+				<mat-select formControlName="pattern">
+					<mat-option *ngFor="let pattern of patterns | patternFilter:patternSelectForm.value.scope:patternSelectForm.value.category" [value]="pattern" class="text-capitalize">
+						{{ pattern.name }}
+					</mat-option>
+				</mat-select>
+			</mat-form-field>
+		</form>
+	</div>
+	<div class="col-md-4">
+		<h2>Structured English Grammar</h2>
+		<div class="text-field-wrapper">
+			{{ patternSelectForm.value.pattern?.seg || '-' }}
+		</div>
+	</div>
+	<div class="col-md-4">
+		<h2>Target Logic</h2>
+		<mat-form-field class="full-width" appearance="fill">
+			<mat-label>Target Logic</mat-label>
+			<mat-select value="MTL">
+				<mat-option *ngFor="let targetLogic of targetLogics" [value]="targetLogic">
+					{{ targetLogic }}
+				</mat-option>
+			</mat-select>
+		</mat-form-field>
+		<div class="text-field-wrapper">
+			{{ patternSelectForm.value.pattern?.formula || '-' }}
+		</div>
+	</div>
+</div>

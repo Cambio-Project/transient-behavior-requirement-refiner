@@ -1,0 +1,47 @@
+<h2>Select File</h2>
+
+<div class="row">
+	<div class="col-12">
+		<mat-form-field appearance="fill" style="margin-right: 16px;">
+			<mat-label>File Source</mat-label>
+			<mat-select [(ngModel)]="sourceType" value="upload">
+				<mat-option value="demo">Demo</mat-option>
+				<mat-option value="upload">Upload</mat-option>
+			</mat-select>
+		</mat-form-field>
+		<mat-form-field *ngIf="sourceType === 'demo'" appearance="fill">
+			<mat-label>Demo File</mat-label>
+			<mat-select (selectionChange)="onDemoFileChange($event)">
+				<mat-option *ngFor="let file of assetCsvFiles" [value]="file">
+					{{ file }}
+				</mat-option>
+			</mat-select>
+		</mat-form-field>
+		<input *ngIf="sourceType === 'upload'" type="file" accept=".csv" (change)="onFileSelected($event)" />
+	</div>
+</div>
+
+<mat-card style="padding: 0;">
+	<div class="table-container" *ngIf="dataset">
+		<table mat-table [dataSource]="dataset.data" class="mat-elevation-z8" style="width: 100%;">
+			<ng-container [matColumnDef]="column" *ngFor="let column of metricDefinitions; let i = index">
+				<th mat-header-cell *matHeaderCellDef> {{ column }} </th>
+				<td mat-cell *matCellDef="let val"> {{ val[column] }} </td>
+			</ng-container>
+			<tr mat-header-row *matHeaderRowDef="metricDefinitions"></tr>
+			<tr mat-row *matRowDef="let row; columns: metricDefinitions;"></tr>
+		</table>
+	</div>
+</mat-card>
+
+
+<!-- <div class="table-container" *ngIf="dataset">
+	<table mat-table [dataSource]="dataset.data" class="mat-elevation-z8" style="width: 100%;">
+		<ng-container [matColumnDef]="column" *ngFor="let column of metricDefinitions; let i = index">
+			<th mat-header-cell *matHeaderCellDef> {{ column }} </th>
+			<td mat-cell *matCellDef="let val"> {{ val[column] }} </td>
+		</ng-container>
+		<tr mat-header-row *matHeaderRowDef="metricDefinitions"></tr>
+		<tr mat-row *matRowDef="let row; columns: metricDefinitions;"></tr>
+	</table>
+</div> -->

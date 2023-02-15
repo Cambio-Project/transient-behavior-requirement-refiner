@@ -1,0 +1,8 @@
+<app-property-validator [dataset]="dataset" [property]="property" [propertyValidationResponse]="propertyValidationResponse"></app-property-validator>
+<div *ngIf="dataset && property" [ngClass]="{ 'validation-result-true': propertyValidationResponse?.result === true, 'validation-result-false': propertyValidationResponse?.result === false}" style="margin-top: 16px; margin-bottom: 68px; padding: 8px;">
+	<ng-container [ngSwitch]="property.getPattern()?.getType()">
+		<app-pattern-occurrence-universality *ngSwitchCase="PSPConstants.P_Universality" [dataset]="dataset" [property]="property" (propertyChange)="onPropertyChange($event)"></app-pattern-occurrence-universality>
+		<app-pattern-occurrence-absence *ngSwitchCase="PSPConstants.P_Absence" [dataset]="dataset" [property]="property" (propertyChange)="onPropertyChange($event)"></app-pattern-occurrence-absence>
+		<app-pattern-order-response-edit *ngSwitchCase="PSPConstants.P_Response" [dataset]="dataset" [property]="property" (propertyChange)="onPropertyChange($event)"></app-pattern-order-response-edit>
+	</ng-container>
+</div>
