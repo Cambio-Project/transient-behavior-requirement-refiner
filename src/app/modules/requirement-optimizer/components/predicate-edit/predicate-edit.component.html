@@ -1,0 +1,57 @@
+<mat-card>
+	<mat-card-title>
+		<!-- {{ '{' + event.getName() + '}' }} -->
+		{{ '{' + predicateForm.value.fName + '}' }}
+		<!-- <button (click)="onClickRefinement()" mat-icon-button color="primary" aria-label="Requirement Refinement" style="position: absolute; top: 8px; right: 64px;">
+			<mat-icon>settings_suggest</mat-icon>
+		</button> -->
+		<button mat-icon-button (click)="editFormExpaneded = !editFormExpaneded" style="position: absolute; top: 8px; right: 12px;" aria-label="Edit">
+			<mat-icon>edit</mat-icon>
+		</button>
+	</mat-card-title>
+	<mat-card-content *ngIf="dataset && editFormExpaneded" style="margin-top: 24px;">
+		<form [formGroup]="predicateForm">
+			<div class="row">
+				<div class="col-md-4">
+					<mat-form-field class="full-width" appearance="fill">
+						<mat-label>Predicate Name</mat-label>
+						<input matInput formControlName="fName">
+					</mat-form-field>
+
+					<mat-form-field class="full-width text-capitalize" appearance="fill">
+						<mat-label>Measurement Source</mat-label>
+						<mat-select formControlName="fMeasurementSource">
+							<mat-option *ngFor="let metric of dataset.metricDefinitions" [value]="metric">
+								{{ metric }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+
+					<mat-form-field class="full-width text-capitalize" appearance="fill">
+						<mat-label>Logic Operator</mat-label>
+						<mat-select formControlName="fLogicOperator">
+							<mat-option *ngFor="let logicOperator of LOGIC_OPERATOR_OPTIONS" [value]="logicOperator">
+								{{ logicOperator }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+
+					<mat-form-field class="full-width text-capitalize" appearance="fill">
+						<mat-label>Comparison Value</mat-label>
+						<input matInput formControlName="fComparisonValue" type="number">
+					</mat-form-field>
+
+					<!--
+					<h4>Comparison Value: <strong>{{ predicateForm.value.fComparisonValue }}</strong></h4>
+					<mat-slider formControlName="fComparisonValue" thumbLabel [displayWith]="formatLabel" value="2" tickInterval="1" step="1" [min]="0" [max]="dataset.metricMax(predicateForm.value.fMeasurementSource)" aria-label="units" class="full-width"></mat-slider>
+					-->
+
+				</div>
+				<div class="col-md-8">
+					<app-graph-plotter [dataset]="dataset" [properties]="[predicateForm.value.fMeasurementSource]" [comparisonValue]="predicateForm.value.fComparisonValue" [validationResponse]="validationResponse" [height]="280"></app-graph-plotter>
+				</div>
+			</div>
+		</form>
+	</mat-card-content>
+
+</mat-card>
