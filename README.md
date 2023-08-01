@@ -2,6 +2,13 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.0.
 
+## Showcases
+### TQPropRefiner with Manual Timebound Refinement
+[![](https://markdown-videos.vercel.app/youtube/fy_vLCxptAs)](https://youtu.be/fy_vLCxptAs)
+
+### TQPropRefiner with Automatic Timebound Refinement
+[![](https://markdown-videos.vercel.app/youtube/OjZPbsXNw1g)](https://youtu.be/OjZPbsXNw1g)
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
