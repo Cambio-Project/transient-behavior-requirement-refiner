@@ -2,13 +2,18 @@
 
 <div class="row">
 	<div class="col-12">
+
+		<!-- Upload selection -->
 		<mat-form-field appearance="fill" style="margin-right: 16px;">
 			<mat-label>File Source</mat-label>
 			<mat-select [(ngModel)]="sourceType" value="upload">
 				<mat-option value="demo">Demo</mat-option>
 				<mat-option value="upload">Upload</mat-option>
+				<mat-option value="prometheus">Prometheus</mat-option>
 			</mat-select>
 		</mat-form-field>
+
+		<!-- Selection: Demo file -->
 		<mat-form-field *ngIf="sourceType === 'demo'" appearance="fill">
 			<mat-label>Demo File</mat-label>
 			<mat-select (selectionChange)="onDemoFileChange($event)">
@@ -17,7 +22,39 @@
 				</mat-option>
 			</mat-select>
 		</mat-form-field>
-		<input *ngIf="sourceType === 'upload'" type="file" accept=".csv" (change)="onFileSelected($event)" />
+
+		<!-- Selection: Custom file upload -->
+		<input *ngIf="sourceType === 'upload'" type="file" accept=".csv" (change)="onFileSelected($event)"/>
+
+		<!-- Selection: Prometheus database connection -->
+		<ng-container *ngIf="sourceType === 'prometheus'">
+			<mat-form-field appearance="fill">
+				<mat-label>Prometheus Connection URL</mat-label>
+				<input [(ngModel)]="dbUrl" matInput type="text" (keyup.enter)="onConnectButtonPressed()"/>
+			</mat-form-field>
+
+			<button mat-raised-button color="primary" (click)="onConnectButtonPressed()" style="margin-left: 8px;">
+				Connect
+			</button>
+		</ng-container>
+
+		<!-- Selection: Prometheus database connection -->
+		<ng-container *ngIf="sourceType === 'prometheus' && dbConnected">
+			<mat-form-field appearance="fill" style="margin-left: 16px;">
+				<mat-label>Starting Time</mat-label>
+				<input [(ngModel)]="dbStartTimestamp" matInput type="text"/>
+			</mat-form-field>
+
+			<mat-form-field appearance="fill">
+				<mat-label>Ending Time</mat-label>
+				<input [(ngModel)]="dbEndTimestamp" matInput type="text"/>
+			</mat-form-field>
+
+			<button mat-raised-button color="primary" style="margin-left: 8px;">
+				Set Interval
+			</button>
+		</ng-container>
+
 	</div>
 </div>
 

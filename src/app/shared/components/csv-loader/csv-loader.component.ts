@@ -14,11 +14,16 @@ export class CsvLoaderComponent implements OnInit {
 	@Output() datasetChange: EventEmitter<Dataset> = new EventEmitter<Dataset>();
 	metricDefinitions?: string[];
 
-	sourceType: 'demo' | 'upload' = 'demo';
+	sourceType: 'demo' | 'upload' | 'prometheus' = 'demo';
 	assetCsvFiles: string[] = [
 		'chaos-exp-1-trace.csv',
 		'chaos-exp-2-trace.csv',
 	];
+
+  dbUrl: string = 'http://localhost:9090';
+  dbConnected: boolean = false;
+  dbStartTimestamp: number = 0;
+  dbEndTimestamp: number = 0;
 
 	constructor(private dataSvc: DataService) { }
 
@@ -33,6 +38,18 @@ export class CsvLoaderComponent implements OnInit {
 		const fileName = event.value;
 		this.loadCsvFileFromAssets(fileName);
 	}
+
+  onConnectButtonPressed() {
+    this.dataSvc.setDbUrl(this.dbUrl).then(res => {
+      if (res) {
+        console.log('Successfully connected to Prometheus');
+        this.dbConnected = true;
+      } else {
+        console.log('Failed to connect to Prometheus');
+        this.dbConnected = false;
+      }
+    });
+  }
 
 	async loadCsvFileLocal(file: File) {
 		const dataset = await this.dataSvc.parseCsvFile(file);

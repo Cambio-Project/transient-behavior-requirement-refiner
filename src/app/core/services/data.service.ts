@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Papa } from 'ngx-papaparse';
-import { Dataset } from '../../shared/models/dataset';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Papa} from 'ngx-papaparse';
+import {Dataset} from '../../shared/models/dataset';
+import {Observable, Subscription} from "rxjs";
 
 @Injectable({
 	providedIn: 'root'
@@ -50,6 +51,21 @@ export class DataService {
 		b.name = fileName;
 		return <File>blob;
 	}
+
+	setDbUrl(dbUrl: string): Promise<boolean> {
+		const url = dbUrl + '/api/v1/query?query=up';
+		return new Promise((resolve, reject) => {
+			this.http.get(url).subscribe(
+				data => {
+					resolve(true);
+				},
+				error => {
+					resolve(false);
+				}
+			);
+		});
+	}
+
 
 	generateUUID() {
 		var d = new Date().getTime();//Timestamp
