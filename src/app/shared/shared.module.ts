@@ -20,6 +20,7 @@ import { GraphPlotterComponent } from './components/graph-plotter/graph-plotter.
 import { CsvLoaderComponent } from './components/csv-loader/csv-loader.component';
 import { PatternFilterPipe } from './pipes/pattern-filter.pipe';
 import { CategoryFilterPipe } from './pipes/category-filter.pipe';
+import {MatSnackBarModule} from "@angular/material/snack-bar";
 
 
 @NgModule({
@@ -76,6 +77,7 @@ import { CategoryFilterPipe } from './pipes/category-filter.pipe';
 		MatDialogModule,
 		MatProgressSpinnerModule,
 		MatStepperModule,
+        MatSnackBarModule,
 
 		// Pipes
 		PatternFilterPipe,
