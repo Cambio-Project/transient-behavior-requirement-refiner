@@ -8,6 +8,7 @@ import {Observable, Subscription} from "rxjs";
 interface PrometheusResponse {
     status: string;
     data: string[];
+	error: string;
 }
 
 
@@ -78,7 +79,10 @@ export class DataService {
         return new Promise((resolve, reject) => {
             this.http.get<PrometheusResponse>(url).subscribe(
                 data => {
-                    resolve(data['data']);
+					if (data['status'] !== 'success') {
+						reject('Error: ' + data['error']);
+					}
+					resolve(data['data']);
                 },
                 error => {
                     resolve([]);
@@ -88,19 +92,21 @@ export class DataService {
     }
 
     getMetrics(dbUrl: string, metrics: string[], start: Date, end: Date, step: string): Promise<any> {
+        // query format: {__name__=~"metric1|metric2|metric3"}
         const url = dbUrl
             + '/api/v1/query_range?query=' + encodeURIComponent('{__name__=~"' + metrics.join('|') + '"}')
             + '&start=' + encodeURIComponent(start.toISOString())
             + '&end=' + encodeURIComponent(end.toISOString())
             + '&step=' + encodeURIComponent(step);
 
+		// raise error if status is not success
         return new Promise((resolve, reject) => {
             this.http.get<PrometheusResponse>(url).subscribe(
                 data => {
                     resolve(this.responseToArray(data));
                 },
                 error => {
-                    resolve([]);
+                    reject(error);
                 }
             );
         });
