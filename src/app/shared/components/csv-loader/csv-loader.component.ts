@@ -23,10 +23,15 @@ export class CsvLoaderComponent implements OnInit {
 
     dbUrl: string = 'http://localhost:9090';
     dbConnected: boolean = false;
-    dbStartTimestamp: number = 0;
-    dbEndTimestamp: number = 0;
+    dbMetricLabels: string[] = [];
+    selectedStartDatetime: Date = new Date();
+    selectedEndDatetime: Date = new Date();
+    selectedStepSize: string = "1m";
+    selectedMetrics: string[] = [];
 
-	constructor(private dataSvc: DataService, private snackBar: MatSnackBar) {}
+	constructor(private dataSvc: DataService, private snackBar: MatSnackBar) {
+        this.selectedStartDatetime.setMinutes(this.selectedStartDatetime.getMinutes() - 30);
+    }
 
     ngOnInit(): void { }
 
@@ -40,27 +45,33 @@ export class CsvLoaderComponent implements OnInit {
 		this.loadCsvFileFromAssets(fileName);
 	}
 
-    onConnectButtonPressed() {
+    async onConnectButtonPressed() {
         this.dataSvc.setDbUrl(this.dbUrl).then(res => {
             if (res) {
-                console.log('Successfully connected to Prometheus');
                 this.dbConnected = true;
-                // Display success snackbar
-                this.snackBar.open(
-                    'Successfully connected to the database!',
-                    'Close',
-                    {duration: 3000, panelClass: ['mat-toolbar', 'mat-primary']});
+                this.showSnackbar('Successfully connected to the database!', ['mat-toolbar', 'mat-primary'])
+                this.loadAvailableMetrics();
             } else {
-                console.log('Failed to connect to Prometheus');
                 this.dbConnected = false;
-                // Display error snackbar
-                this.snackBar.open(
-                    'Failed to connect to the database. Please try again.',
-                    'Close',
-                    {duration: 3000, panelClass: ['mat-toolbar', 'mat-warn']}
-                );
+                this.showSnackbar('Failed to connect to the database!', ['mat-toolbar', 'mat-warn'])
             }
         });
+    }
+
+    async onQueryButtonPressed() {
+        const metrics = await this.dataSvc.getMetrics(
+            this.dbUrl,
+            this.selectedMetrics,
+            this.selectedStartDatetime,
+            this.selectedEndDatetime,
+            this.selectedStepSize
+        );
+        const dataset = new Dataset(metrics, new File([], 'prometheus.csv'));
+        this.setDataset(dataset);
+    }
+
+    async onMetricChange(event: MatSelectChange) {
+        this.selectedMetrics = event.value;
     }
 
 	async loadCsvFileLocal(file: File) {
@@ -73,10 +84,18 @@ export class CsvLoaderComponent implements OnInit {
 		this.setDataset(dataset);
 	}
 
+    async loadAvailableMetrics() {
+        this.dbMetricLabels = await this.dataSvc.getAvailableMetrics(this.dbUrl);
+    }
+
 	setDataset(dataset: Dataset) {
 		this.dataset = dataset;
 		this.datasetChange.emit(this.dataset);
 		this.metricDefinitions = ['time', ...this.dataset.metricDefinitions];
 	}
+
+    private showSnackbar(message: string, panelClass: string[]) {
+        this.snackBar.open(message, 'Close', {duration: 3000, panelClass: panelClass});
+    }
 
 }

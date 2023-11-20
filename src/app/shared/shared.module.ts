@@ -20,7 +20,10 @@ import { GraphPlotterComponent } from './components/graph-plotter/graph-plotter.
 import { CsvLoaderComponent } from './components/csv-loader/csv-loader.component';
 import { PatternFilterPipe } from './pipes/pattern-filter.pipe';
 import { CategoryFilterPipe } from './pipes/category-filter.pipe';
-import {MatSnackBarModule} from "@angular/material/snack-bar";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from "@angular-material-components/datetime-picker";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+
 
 
 @NgModule({
@@ -30,29 +33,33 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 		PatternFilterPipe,
 		CategoryFilterPipe,
 	],
-	imports: [
-		CommonModule,
+    imports: [
+        CommonModule,
 
-		// Forms
-		FormsModule,
-		ReactiveFormsModule,
+        // Forms
+        FormsModule,
+        ReactiveFormsModule,
 
-		// Material
-		MatTabsModule,
-		MatToolbarModule,
-		MatSelectModule,
-		MatInputModule,
-		MatTableModule,
-		MatCardModule,
-		MatDividerModule,
-		MatSliderModule,
-		MatButtonModule,
-		MatIconModule,
-		MatRadioModule,
-		MatDialogModule,
-		MatProgressSpinnerModule,
-		MatStepperModule,
-	],
+        // Material
+        MatTabsModule,
+        MatToolbarModule,
+        MatSelectModule,
+        MatInputModule,
+        MatTableModule,
+        MatCardModule,
+        MatDividerModule,
+        MatSliderModule,
+        MatButtonModule,
+        MatIconModule,
+        MatRadioModule,
+        MatDialogModule,
+        MatProgressSpinnerModule,
+        MatStepperModule,
+        MatSnackBarModule,
+        MatDatepickerModule,
+        NgxMatDatetimePickerModule,
+        NgxMatNativeDateModule,
+    ],
 	exports: [
 		// Components
 		CsvLoaderComponent,

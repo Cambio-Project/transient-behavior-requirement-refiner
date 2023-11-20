@@ -4,6 +4,13 @@ import {Papa} from 'ngx-papaparse';
 import {Dataset} from '../../shared/models/dataset';
 import {Observable, Subscription} from "rxjs";
 
+
+interface PrometheusResponse {
+    status: string;
+    data: string[];
+}
+
+
 @Injectable({
 	providedIn: 'root'
 })
@@ -55,7 +62,7 @@ export class DataService {
 	setDbUrl(dbUrl: string): Promise<boolean> {
 		const url = dbUrl + '/api/v1/query?query=up';
 		return new Promise((resolve, reject) => {
-			this.http.get(url).subscribe(
+			this.http.get<PrometheusResponse>(url).subscribe(
 				data => {
 					resolve(true);
 				},
@@ -65,6 +72,73 @@ export class DataService {
 			);
 		});
 	}
+
+    getAvailableMetrics(dbUrl: string): Promise<string[]> {
+        const url = dbUrl + '/api/v1/label/__name__/values';
+        return new Promise((resolve, reject) => {
+            this.http.get<PrometheusResponse>(url).subscribe(
+                data => {
+                    resolve(data['data']);
+                },
+                error => {
+                    resolve([]);
+                }
+            );
+        });
+    }
+
+    getMetrics(dbUrl: string, metrics: string[], start: Date, end: Date, step: string): Promise<any> {
+        const url = dbUrl
+            + '/api/v1/query_range?query=' + encodeURIComponent('{__name__=~"' + metrics.join('|') + '"}')
+            + '&start=' + encodeURIComponent(start.toISOString())
+            + '&end=' + encodeURIComponent(end.toISOString())
+            + '&step=' + encodeURIComponent(step);
+
+        return new Promise((resolve, reject) => {
+            this.http.get<PrometheusResponse>(url).subscribe(
+                data => {
+                    resolve(this.responseToArray(data));
+                },
+                error => {
+                    resolve([]);
+                }
+            );
+        });
+    }
+
+    private responseToArray(response: any): any[] {
+        const data = response['data']['result'];
+        const metricNames = data.map((metric: any) => metric['metric']['__name__']);
+        const metricValues = data.map((metric: any) => metric['values']);
+
+        // attach metric properties to names
+        for (let i = 0; i < metricNames.length; i++) {
+            const metricName = metricNames[i];
+            const metricLabelNames = Object.keys(data[i]['metric']).filter(key => key !== '__name__');
+            const metricLabelValues = Object.values(data[i]['metric']).filter(key => key !== metricName);
+            const metricLabelPairs = metricLabelNames.map((name: string, index: number) => {
+                return name + '="' + metricLabelValues[index] + '"';
+            });
+            metricNames[i] += '{' + metricLabelPairs.join(', ') + '}';
+        }
+
+
+        const numMetrics = metricValues.length;
+        const numValues = metricValues[0].length;
+
+        let result = [metricNames];
+
+        for (let i = 0; i < numValues; i++) {
+            const row = [];
+            for (let j = 0; j < numMetrics; j++) {
+                // first value is the timestamp, second value is the metric value
+                row.push(metricValues[j][i][1]);
+            }
+            result.push(row);
+        }
+
+        return result;
+    }
 
 
 	generateUUID() {
