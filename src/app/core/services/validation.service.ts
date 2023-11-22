@@ -120,21 +120,35 @@ export class ValidationService {
 	} */
 
 	async refinePredicate(dataset: Dataset, predicateName: string, property: Property) {
-		console.log('PROPER', property)
-		const pattern = property.getPattern();
-		const event = pattern?.getEvents().find(event => event.getName() === predicateName);
-		const promises: Promise<ValidationResponse>[] = [];
-		if (event && event.fMeasurementSource) {
-			const max = dataset.metricMax(event.fMeasurementSource);
 
+		const pattern = property.getPattern();
+		const event = pattern?.getEvents().find(event => event.getSpecification() === predicateName);
+		const promises: Promise<ValidationResponse>[] = [];
+
+		if (event && event.fMeasurementSource) {
+			const max = dataset.metricMax(event.fMeasurementSource) + 2;
 			for (let i = 0; i < max; i++) {
 				const propertyCandidate: Property = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
 				const patternCandidate: Pattern = Object.assign(Object.create(Object.getPrototypeOf(propertyCandidate.getPattern())), propertyCandidate.getPattern());
-				const eventCandidate = patternCandidate?.getEvents().find(event => event.getName() === predicateName);
+				const eventCandidate = patternCandidate?.getEvents().find(event => event.getSpecification() === predicateName);
 				if (eventCandidate) {
 					eventCandidate.setComparisonValue(i);
 					eventCandidate.setLogicOperator(LogicOperator.EQUAL);
 					promises.push(this.validateProperty(dataset, propertyCandidate));
+				}
+			}
+		} else if (property.getScope().getQ().getSpecification() === predicateName) {
+			const scopeEvent = property.getScope().getQ();
+			if (scopeEvent && scopeEvent.fMeasurementSource) {
+				const max = dataset.metricMax(scopeEvent.fMeasurementSource) + 2;
+				for (let i = 0; i < max; i++) {
+					const propertyCandidate: Property = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
+					const scopeEcentCandidate = propertyCandidate.getScope().getQ();
+					if (scopeEcentCandidate) {
+						scopeEcentCandidate.setComparisonValue(i);
+						scopeEcentCandidate.setLogicOperator(LogicOperator.EQUAL);
+						promises.push(this.validateProperty(dataset, propertyCandidate));
+					}
 				}
 			}
 		}

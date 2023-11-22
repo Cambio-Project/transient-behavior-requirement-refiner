@@ -44,7 +44,7 @@ export class Dataset {
 		if (!metric) {
 			return 0;
 		}
-		return Math.ceil(Math.max(...this.data.map(val => val[metric]).filter(val => !Number.isNaN(val)))) * 1.5;
+		return Math.ceil(Math.max(...this.data.map(val => val[metric]).filter(val => !Number.isNaN(val))));
 	}
 
 }

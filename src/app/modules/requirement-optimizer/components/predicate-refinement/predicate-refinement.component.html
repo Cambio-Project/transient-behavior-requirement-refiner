@@ -6,8 +6,8 @@
 	<mat-spinner *ngIf="isLoading" style="margin: 0 auto;"></mat-spinner>
 	<!-- <div #chart></div> -->
 	<ng-container *ngFor="let validationResponse of validationResponses; let i = index;">
-		<div style="margin-bottom: 8px;">
-			<button mat-flat-button (click)="onConfirm(i)" color="primary" [ngStyle]="validationResponse.result ? {'background-color': 'green'} : {'background-color': 'red'}">{{ i }} - {{ validationResponse.result }}</button>
+		<div style="margin-bottom: 8px; margin-right: 8px; display: inline-block;">
+			<button mat-flat-button (click)="onConfirm(i)" color="primary" [ngStyle]="validationResponse.result ? {'background-color': 'green'} : {'background-color': 'red'}">{{ i }}</button>
 		</div>
 	</ng-container>
 </mat-dialog-content>

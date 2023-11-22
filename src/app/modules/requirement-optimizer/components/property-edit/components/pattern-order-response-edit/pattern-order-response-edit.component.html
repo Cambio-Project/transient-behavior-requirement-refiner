@@ -6,7 +6,7 @@
 			</mat-card>
 		</div>
 		<div class="col">
-			<app-predicate-edit [dataset]="dataset" [event]="response.getP()" (eventChange)="onPropertyChange()"></app-predicate-edit>
+			<app-predicate-edit [dataset]="dataset" [property]="property" [event]="response.getP()" (eventChange)="onPropertyChange()"></app-predicate-edit>
 		</div>
 		<div class="col-md-auto">
 			<mat-card>
@@ -21,7 +21,7 @@
 			</mat-card>
 		</div>
 		<div class="col-md">
-			<app-predicate-edit [dataset]="dataset" [event]="response.getS()" (eventChange)="onPropertyChange()"></app-predicate-edit>
+			<app-predicate-edit [dataset]="dataset" [property]="property" [event]="response.getS()" (eventChange)="onPropertyChange()"></app-predicate-edit>
 		</div>
 		<div class="col-md-auto">
 			<mat-card>

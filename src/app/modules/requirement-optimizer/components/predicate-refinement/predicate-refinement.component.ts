@@ -41,17 +41,10 @@ export class PredicateRefinementComponent implements OnInit {
 		console.log(this.predicateName)
 		this.validationResponses = await this.validationSvc.refinePredicate(this.dataset, this.predicateName, this.property);
 		this.isLoading = false;
-
-		this.validationResponses.forEach(res => {
-			if (res.validatedItem instanceof Property) {
-				console.log(res.validatedItem.getPattern()?.getEvents().find(predicate => predicate.getName() === this.predicateName)?.getComparisonValue());
-			}
-		})
 	}
 
-	onConfirm(index: number) {
-		this.dialogRef.close(index);
+	onConfirm(comparisonValue: number) {
+		this.dialogRef.close(comparisonValue);
 	}
-
 
 }
