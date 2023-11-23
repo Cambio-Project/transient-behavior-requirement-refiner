@@ -47,8 +47,9 @@
 					-->
 
 				</div>
-				<div class="col-md-8">
-					<app-graph-plotter [dataset]="dataset" [properties]="[predicateForm.value.fMeasurementSource]" [comparisonValue]="predicateForm.value.fComparisonValue" [validationResponse]="validationResponse" [height]="280"></app-graph-plotter>
+        <div #myPlot class="col-md-8" (mouseenter)="mouseEnterEvent()" (mouseleave)="mouseLeaveEvent()" (mousemove)="mouseOverEvent($event)">
+          <div class="plotMarker"></div>
+          <app-graph-plotter  [dataset]="dataset" [properties]="[predicateForm.value.fMeasurementSource]" [comparisonValue]="predicateForm.value.fComparisonValue" [validationResponse]="validationResponse" [height]="280"></app-graph-plotter>
 				</div>
 			</div>
 		</form>
