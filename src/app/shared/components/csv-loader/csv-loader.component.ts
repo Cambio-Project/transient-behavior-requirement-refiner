@@ -59,7 +59,7 @@ export class CsvLoaderComponent implements OnInit {
     }
 
     async onQueryButtonPressed() {
-        const res = await this.dataSvc.getMetrics(
+        await this.dataSvc.getMetrics(
             this.dbUrl,
             this.selectedMetrics,
             this.selectedStartDatetime,
@@ -69,8 +69,7 @@ export class CsvLoaderComponent implements OnInit {
             if (res.length == 0) {
                 this.showSnackbar('No metrics found!', ['mat-toolbar', 'mat-warn']);
             } else {
-                const dataset = new Dataset(res, new File([], 'prometheus.csv'));
-                this.setDataset(dataset);
+                this.setDataset(res);
             }
         }).catch(err => {
             let msg = err.error.error

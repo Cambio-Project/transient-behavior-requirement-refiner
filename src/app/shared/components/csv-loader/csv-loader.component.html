@@ -38,9 +38,12 @@
             </button>
         </ng-container>
 
+    </div>
+
+    <div class="col-12">
         <ng-container *ngIf="sourceType === 'prometheus' && dbConnected">
 
-            <mat-form-field appearance="fill" style="margin-left: 16px;">
+            <mat-form-field appearance="fill">
                 <mat-label>Choose a metric</mat-label>
                 <mat-select (selectionChange)="onMetricChange($event)" multiple>
                     <mat-option *ngFor="let metric of dbMetricLabels" [value]="metric">

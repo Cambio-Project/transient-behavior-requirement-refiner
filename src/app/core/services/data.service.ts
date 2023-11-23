@@ -79,9 +79,6 @@ export class DataService {
         return new Promise((resolve, reject) => {
             this.http.get<PrometheusResponse>(url).subscribe(
                 data => {
-					if (data['status'] !== 'success') {
-						reject('Error: ' + data['error']);
-					}
 					resolve(data['data']);
                 },
                 error => {
@@ -101,9 +98,10 @@ export class DataService {
 
 		// raise error if status is not success
         return new Promise((resolve, reject) => {
-            this.http.get<PrometheusResponse>(url).subscribe(
+            this.http.get<Dataset>(url).subscribe(
                 data => {
-                    resolve(this.responseToArray(data));
+                    const parsed_data = this.responseToArray(data);
+                    resolve(parsed_data);
                 },
                 error => {
                     reject(error);
@@ -117,20 +115,26 @@ export class DataService {
         const metricNames = data.map((metric: any) => metric['metric']['__name__']);
         const metricValues = data.map((metric: any) => metric['values']);
 
+        const numMetrics = metricValues.length;
+        const numValues = metricValues[0].length;
+
+        if (metricValues.length === 0) {
+            return [];
+        }
+
         // attach metric properties to names
         for (let i = 0; i < metricNames.length; i++) {
+            if (metricValues[i].length !== numValues) {
+                throw new Error('Metric values have different lengths and can not be aligned!');
+            }
             const metricName = metricNames[i];
             const metricLabelNames = Object.keys(data[i]['metric']).filter(key => key !== '__name__');
             const metricLabelValues = Object.values(data[i]['metric']).filter(key => key !== metricName);
             const metricLabelPairs = metricLabelNames.map((name: string, index: number) => {
                 return name + '="' + metricLabelValues[index] + '"';
             });
-            metricNames[i] += '{' + metricLabelPairs.join(', ') + '}';
+            metricNames[i] += '<' + metricLabelPairs.join(', ') + '>';
         }
-
-
-        const numMetrics = metricValues.length;
-        const numValues = metricValues[0].length;
 
         let result = [metricNames];
 
@@ -138,7 +142,8 @@ export class DataService {
             const row = [];
             for (let j = 0; j < numMetrics; j++) {
                 // first value is the timestamp, second value is the metric value
-                row.push(metricValues[j][i][1]);
+                const value = Number.parseInt(metricValues[j][i]);
+                row.push(value);
             }
             result.push(row);
         }
