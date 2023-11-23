@@ -101,7 +101,8 @@ export class DataService {
             this.http.get<Dataset>(url).subscribe(
                 data => {
                     const parsed_data = this.responseToArray(data);
-                    resolve(parsed_data);
+                    const dataset = new Dataset(parsed_data, new File([], ''));
+                    resolve(dataset);
                 },
                 error => {
                     reject(error);
