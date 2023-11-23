@@ -22,8 +22,7 @@ export class PredicateEditComponent implements OnInit {
   @Input() event!: Event;
   @Output() eventChange = new EventEmitter<Event>();
 
-  @ViewChild("myDiv") myDiv?: ElementRef
-  @ViewChild("myPlot") myPiv?: ElementRef
+  @ViewChild("myPlot") myPlot?: ElementRef
 
   validationResponse?: ValidationResponse;
   editFormExpaneded: boolean = false;
@@ -119,7 +118,6 @@ export class PredicateEditComponent implements OnInit {
   }
 
   mouseEnterEvent(){
-    console.log(this.myDiv)
     let plots = document.querySelectorAll<HTMLElement>(".plotMarker")
     // @ts-ignore
     for (const plot of plots) {
@@ -137,7 +135,7 @@ export class PredicateEditComponent implements OnInit {
 
   mouseOverEvent(event: MouseEvent){
     // @ts-ignore
-    let offset = this.myPiv.nativeElement.getBoundingClientRect().left;
+    let offset = this.myPlot.nativeElement.getBoundingClientRect().left;
     let plots = document.querySelectorAll<HTMLElement>(".plotMarker")
     // @ts-ignore
     for (const plot of plots) {
