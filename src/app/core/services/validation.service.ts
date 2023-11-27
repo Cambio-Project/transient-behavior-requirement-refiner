@@ -6,8 +6,7 @@ import { Property } from 'src/app/shared/psp/sel/property';
 import { Response } from 'src/app/shared/psp/sel/patterns/order/response';
 import { Interval } from 'src/app/shared/psp/constraints/interval';
 import { Pattern } from 'src/app/shared/psp/sel/patterns/pattern';
-import { LogicOperator } from 'src/app/shared/enums/logic-operator';
-import { PSPConstants } from 'src/app/shared/psp/engine/pspconstants';
+import { LogicOperator, requiresComparisonValue } from 'src/app/shared/enums/logic-operator';
 import { TimeBound } from 'src/app/shared/psp/constraints/time-bound';
 import { UpperTimeBound } from 'src/app/shared/psp/constraints/upper-time-bound';
 import { LowerTimeBound } from 'src/app/shared/psp/constraints/lower-time-bound';
@@ -119,7 +118,10 @@ export class ValidationService {
 		return null;
 	} */
 
-	async refinePredicate(dataset: Dataset, predicateName: string, property: Property) {
+	async refinePredicate(dataset: Dataset, predicateName: string, logicOperator: LogicOperator, property: Property) {
+		if (!requiresComparisonValue(logicOperator)) {
+			throw new Error('No refinement available for logic operators that do not require a comparison value');
+		}
 
 		const pattern = property.getPattern();
 		const event = pattern?.getEvents().find(event => event.getSpecification() === predicateName);
@@ -133,7 +135,7 @@ export class ValidationService {
 				const eventCandidate = patternCandidate?.getEvents().find(event => event.getSpecification() === predicateName);
 				if (eventCandidate) {
 					eventCandidate.setComparisonValue(i);
-					eventCandidate.setLogicOperator(LogicOperator.EQUAL);
+					eventCandidate.setLogicOperator(logicOperator);
 					promises.push(this.validateProperty(dataset, propertyCandidate));
 				}
 			}
@@ -146,7 +148,7 @@ export class ValidationService {
 					const scopeEcentCandidate = propertyCandidate.getScope().getQ();
 					if (scopeEcentCandidate) {
 						scopeEcentCandidate.setComparisonValue(i);
-						scopeEcentCandidate.setLogicOperator(LogicOperator.EQUAL);
+						scopeEcentCandidate.setLogicOperator(logicOperator);
 						promises.push(this.validateProperty(dataset, propertyCandidate));
 					}
 				}

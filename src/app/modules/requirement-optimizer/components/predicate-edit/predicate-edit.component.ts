@@ -37,6 +37,7 @@ export class PredicateEditComponent implements OnInit {
 	});
 
 	LOGIC_OPERATOR_OPTIONS = LOGIC_OPERATOR_OPTIONS;
+	requiresComparisonValue = requiresComparisonValue;
 
 	constructor(
 		private dialog: MatDialog,
@@ -89,6 +90,7 @@ export class PredicateEditComponent implements OnInit {
 			data: {
 				dataset: this.dataset,
 				predicateName: this.predicateForm.value.fName,
+				predicateLogicOperator: this.predicateForm.value.fLogicOperator,
 				property: this.property,
 			},
 			width: '512px'
@@ -96,7 +98,7 @@ export class PredicateEditComponent implements OnInit {
 
 		dialogRef.afterClosed().subscribe((comparisonValue: number | null) => {
 			if (typeof comparisonValue === 'number' && comparisonValue !== null) {
-				this.predicateForm.patchValue({ fComparisonValue: comparisonValue, fLogicOperator: LogicOperator.EQUAL });
+				this.predicateForm.patchValue({ fComparisonValue: comparisonValue });
 			}
 		});
 	}
