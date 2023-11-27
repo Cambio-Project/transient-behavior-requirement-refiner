@@ -95,8 +95,7 @@ export class PredicateEditComponent implements OnInit {
 		});
 
 		dialogRef.afterClosed().subscribe((comparisonValue: number | null) => {
-			if (!Number.isNaN(comparisonValue)) {
-				console.log(comparisonValue);
+			if (typeof comparisonValue === 'number' && comparisonValue !== null) {
 				this.predicateForm.patchValue({ fComparisonValue: comparisonValue, fLogicOperator: LogicOperator.EQUAL });
 			}
 		});
