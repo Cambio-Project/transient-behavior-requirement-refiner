@@ -101,7 +101,11 @@ export class DataService {
             this.http.get<Dataset>(url).subscribe(
                 data => {
                     const parsed_data = this.responseToArray(data);
-                    const dataset = new Dataset(parsed_data, new File([], ''));
+                    const blob_data = parsed_data.map(row => row.join(',')).join('\n');
+                    const dataset = new Dataset(
+                        parsed_data,
+                        new File([blob_data], 'metrics.csv')
+                    );
                     resolve(dataset);
                 },
                 error => {
@@ -124,18 +128,18 @@ export class DataService {
         }
 
         // attach metric properties to names
-        for (let i = 0; i < metricNames.length; i++) {
-            if (metricValues[i].length !== numValues) {
-                throw new Error('Metric values have different lengths and can not be aligned!');
-            }
-            const metricName = metricNames[i];
-            const metricLabelNames = Object.keys(data[i]['metric']).filter(key => key !== '__name__');
-            const metricLabelValues = Object.values(data[i]['metric']).filter(key => key !== metricName);
-            const metricLabelPairs = metricLabelNames.map((name: string, index: number) => {
-                return name + '="' + metricLabelValues[index] + '"';
-            });
-            metricNames[i] += '<' + metricLabelPairs.join(', ') + '>';
-        }
+        // for (let i = 0; i < metricNames.length; i++) {
+        //     if (metricValues[i].length !== numValues) {
+        //         throw new Error('Metric values have different lengths and can not be aligned!');
+        //     }
+        //     const metricName = metricNames[i];
+        //     const metricLabelNames = Object.keys(data[i]['metric']).filter(key => key !== '__name__');
+        //     const metricLabelValues = Object.values(data[i]['metric']).filter(key => key !== metricName);
+        //     const metricLabelPairs = metricLabelNames.map((name: string, index: number) => {
+        //         return name + '="' + metricLabelValues[index] + '"';
+        //     });
+        //     metricNames[i] += '|' + metricLabelPairs.join(', ') + '|';
+        // }
 
         let result = [metricNames];
 
@@ -143,7 +147,7 @@ export class DataService {
             const row = [];
             for (let j = 0; j < numMetrics; j++) {
                 // first value is the timestamp, second value is the metric value
-                const value = Number.parseInt(metricValues[j][i]);
+                const value = Number.parseInt(metricValues[j][i][1]);
                 row.push(value);
             }
             result.push(row);
