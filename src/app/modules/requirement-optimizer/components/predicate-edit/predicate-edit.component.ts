@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { LogicOperator, LOGIC_OPERATOR_OPTIONS, requiresComparisonValue } from '../../../../shared/enums/logic-operator';
+import { LOGIC_OPERATOR_OPTIONS, requiresComparisonValue } from '../../../../shared/enums/logic-operator';
 import { ValidationResponse } from '../../../../shared/models/validation-response';
 import { Event } from '../../../../shared/psp/sel/event';
 import { Dataset } from '../../../../shared/models/dataset';
@@ -22,6 +22,8 @@ export class PredicateEditComponent implements OnInit {
 	@Input() property?: Property | null;
 	@Input() event!: Event;
 	@Output() eventChange = new EventEmitter<Event>();
+
+	@ViewChild("myPlot") myPlot?: ElementRef
 
 	validationResponse?: ValidationResponse;
 	editFormExpaneded: boolean = false;
@@ -103,4 +105,29 @@ export class PredicateEditComponent implements OnInit {
 		});
 	}
 
+	mouseEnterEvent() {
+		let plots = document.querySelectorAll<HTMLElement>(".plotMarker")
+		// @ts-ignore
+		for (const plot of plots) {
+			plot.style.display = "inline";
+		}
+	}
+
+	mouseLeaveEvent() {
+		let plots = document.querySelectorAll<HTMLElement>(".plotMarker")
+		// @ts-ignore
+		for (const plot of plots) {
+			plot.style.display = "none";
+		}
+	}
+
+	mouseOverEvent(event: MouseEvent) {
+		// @ts-ignore
+		let offset = this.myPlot.nativeElement.getBoundingClientRect().left;
+		let plots = document.querySelectorAll<HTMLElement>(".plotMarker")
+		// @ts-ignore
+		for (const plot of plots) {
+			plot.style.left = (event.clientX - offset) + "px"
+		}
+	}
 }
