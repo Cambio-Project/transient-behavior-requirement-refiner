@@ -106,4 +106,8 @@ export class Property {
 		return null;
 	}
 
+	get valid() {
+		return !this.predicateInfos?.includes(null);
+	}
+
 }

@@ -40,7 +40,7 @@ export class PropertyEditComponent implements OnInit {
 	async validateProperty() {
 		const dataset = this.dataset;
 		const property = this.property;
-		if (dataset && property && !property.predicateInfos?.includes(null)) {
+		if (dataset && property?.valid) {
 			this.validationSvc.validateProperty(dataset, property).then(validationResponse => {
 				this.propertyValidationResponse = validationResponse;
 			});

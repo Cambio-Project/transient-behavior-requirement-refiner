@@ -5,25 +5,25 @@
 				<mat-card-title>After</mat-card-title>
 			</mat-card>
 		</div>
-  </div>
-  <div class="row" style="margin-bottom: 15px;">
+	</div>
+	<div class="row" style="margin-bottom: 15px;">
 		<div class="col">
-			<app-predicate-edit [dataset]="dataset" [event]="property?.getScope()?.getQ()!" (eventChange)="onPropertyChange()"></app-predicate-edit>
+			<app-predicate-edit [dataset]="dataset" [property]="property" [event]="property?.getScope()?.getQ()!" (eventChange)="onPropertyChange()"></app-predicate-edit>
 		</div>
-  </div>
+	</div>
 	<div class="row" style="margin-bottom: 15px;">
 		<div class="col-md-auto">
 			<mat-card>
 				<mat-card-title>it's always the case that</mat-card-title>
 			</mat-card>
 		</div>
-  </div>
-  <div class="row" style="margin-bottom: 15px;">
+	</div>
+	<div class="row" style="margin-bottom: 15px;">
 		<div class="col-md">
-			<app-predicate-edit [dataset]="dataset" [event]="universality.getP()" (eventChange)="onPropertyChange()" ></app-predicate-edit>
+			<app-predicate-edit [dataset]="dataset" [property]="property" [event]="universality.getP()" (eventChange)="onPropertyChange()"></app-predicate-edit>
 		</div>
-  </div>
-  <div class="row" style="margin-bottom: 15px;">
+	</div>
+	<div class="row" style="margin-bottom: 15px;">
 		<div class="col-md-auto">
 			<mat-card>
 				<mat-card-title>[holds]</mat-card-title>

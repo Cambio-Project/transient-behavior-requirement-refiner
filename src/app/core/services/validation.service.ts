@@ -6,8 +6,7 @@ import { Property } from 'src/app/shared/psp/sel/property';
 import { Response } from 'src/app/shared/psp/sel/patterns/order/response';
 import { Interval } from 'src/app/shared/psp/constraints/interval';
 import { Pattern } from 'src/app/shared/psp/sel/patterns/pattern';
-import { LogicOperator } from 'src/app/shared/enums/logic-operator';
-import { PSPConstants } from 'src/app/shared/psp/engine/pspconstants';
+import { LogicOperator, requiresComparisonValue } from 'src/app/shared/enums/logic-operator';
 import { TimeBound } from 'src/app/shared/psp/constraints/time-bound';
 import { UpperTimeBound } from 'src/app/shared/psp/constraints/upper-time-bound';
 import { LowerTimeBound } from 'src/app/shared/psp/constraints/lower-time-bound';
@@ -119,22 +118,39 @@ export class ValidationService {
 		return null;
 	} */
 
-	async refinePredicate(dataset: Dataset, predicateName: string, property: Property) {
-		console.log('PROPER', property)
-		const pattern = property.getPattern();
-		const event = pattern?.getEvents().find(event => event.getName() === predicateName);
-		const promises: Promise<ValidationResponse>[] = [];
-		if (event && event.fMeasurementSource) {
-			const max = dataset.metricMax(event.fMeasurementSource);
+	async refinePredicate(dataset: Dataset, predicateName: string, logicOperator: LogicOperator, property: Property) {
+		if (!requiresComparisonValue(logicOperator)) {
+			throw new Error('No refinement available for logic operators that do not require a comparison value');
+		}
 
+		const pattern = property.getPattern();
+		const event = pattern?.getEvents().find(event => event.getSpecification() === predicateName);
+		const promises: Promise<ValidationResponse>[] = [];
+
+		if (event && event.fMeasurementSource) {
+			const max = dataset.metricMax(event.fMeasurementSource) + 2;
 			for (let i = 0; i < max; i++) {
 				const propertyCandidate: Property = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
 				const patternCandidate: Pattern = Object.assign(Object.create(Object.getPrototypeOf(propertyCandidate.getPattern())), propertyCandidate.getPattern());
-				const eventCandidate = patternCandidate?.getEvents().find(event => event.getName() === predicateName);
+				const eventCandidate = patternCandidate?.getEvents().find(event => event.getSpecification() === predicateName);
 				if (eventCandidate) {
 					eventCandidate.setComparisonValue(i);
-					eventCandidate.setLogicOperator(LogicOperator.EQUAL);
+					eventCandidate.setLogicOperator(logicOperator);
 					promises.push(this.validateProperty(dataset, propertyCandidate));
+				}
+			}
+		} else if (property.getScope().getQ().getSpecification() === predicateName) {
+			const scopeEvent = property.getScope().getQ();
+			if (scopeEvent && scopeEvent.fMeasurementSource) {
+				const max = dataset.metricMax(scopeEvent.fMeasurementSource) + 2;
+				for (let i = 0; i < max; i++) {
+					const propertyCandidate: Property = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
+					const scopeEcentCandidate = propertyCandidate.getScope().getQ();
+					if (scopeEcentCandidate) {
+						scopeEcentCandidate.setComparisonValue(i);
+						scopeEcentCandidate.setLogicOperator(logicOperator);
+						promises.push(this.validateProperty(dataset, propertyCandidate));
+					}
 				}
 			}
 		}

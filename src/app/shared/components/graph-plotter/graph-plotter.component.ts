@@ -101,7 +101,7 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 			if (this.validationResponse) {
 				// TODO
 				//const height = this.dataset?.metricMax(properties[0]);				
-				const height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0));
+				const height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0)) * 1.5;
 
 				this.validationResponse.intervals.forEach(interval => {
 					const arr = Array.from({ length: interval.end - interval.start + 1 }).map((val, i) => {
