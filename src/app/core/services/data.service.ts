@@ -131,18 +131,21 @@ export class DataService {
 
         // attach metric properties to names
         for (let i = 0; i < metricNames.length; i++) {
-            if (metricValues[i].length !== numValues) {
-                throw new Error('Metric values have different lengths and can not be aligned!');
-            }
-            const metricName = metricNames[i];
-            const metricLabelNames = Object.keys(data[i]['metric']).filter(key => key !== '__name__');
-            const metricLabelValues = Object.values(data[i]['metric']).filter(key => key !== metricName);
-            const metricLabelPairs = metricLabelNames.map((name: string, index: number) => {
-                return name + "'" + metricLabelValues[index] + "'";
-            });
-            metricNames[i] += '{' + metricLabelPairs.join(', ') + '}';
-            metricNames[i] = '"' + metricNames[i] + '"';  // wrap in quotes to avoid issues with commas
+            metricNames[i] = metricNames[i] += "_" + this.generateUUID();
         }
+        // for (let i = 0; i < metricNames.length; i++) {
+        //     if (metricValues[i].length !== numValues) {
+        //         throw new Error('Metric values have different lengths and can not be aligned!');
+        //     }
+        //     const metricName = metricNames[i];
+        //     const metricLabelNames = Object.keys(data[i]['metric']).filter(key => key !== '__name__');
+        //     const metricLabelValues = Object.values(data[i]['metric']).filter(key => key !== metricName);
+        //     const metricLabelPairs = metricLabelNames.map((name: string, index: number) => {
+        //         return name + "'" + metricLabelValues[index] + "'";
+        //     });
+        //     metricNames[i] += '{' + metricLabelPairs.join(', ') + '}';
+        //     metricNames[i] = '"' + metricNames[i] + '"';  // wrap in quotes to avoid issues with commas
+        // }
 
         let result = [metricNames];
 
