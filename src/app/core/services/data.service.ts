@@ -116,9 +116,11 @@ export class DataService {
     }
 
     private responseToArray(response: any): any[] {
+        type TupleType = [number, any];
+
         const data = response['data']['result'];
         const metricNames = data.map((metric: any) => metric['metric']['__name__']);
-        const metricValues = data.map((metric: any) => metric['values']);
+        const metricValues: TupleType[][] = data.map((metric: any) => metric['values']);
 
         const numMetrics = metricValues.length;
         const numValues = metricValues[0].length;
@@ -128,27 +130,36 @@ export class DataService {
         }
 
         // attach metric properties to names
-        // for (let i = 0; i < metricNames.length; i++) {
-        //     if (metricValues[i].length !== numValues) {
-        //         throw new Error('Metric values have different lengths and can not be aligned!');
-        //     }
-        //     const metricName = metricNames[i];
-        //     const metricLabelNames = Object.keys(data[i]['metric']).filter(key => key !== '__name__');
-        //     const metricLabelValues = Object.values(data[i]['metric']).filter(key => key !== metricName);
-        //     const metricLabelPairs = metricLabelNames.map((name: string, index: number) => {
-        //         return name + '="' + metricLabelValues[index] + '"';
-        //     });
-        //     metricNames[i] += '|' + metricLabelPairs.join(', ') + '|';
-        // }
+        for (let i = 0; i < metricNames.length; i++) {
+            if (metricValues[i].length !== numValues) {
+                throw new Error('Metric values have different lengths and can not be aligned!');
+            }
+            const metricName = metricNames[i];
+            const metricLabelNames = Object.keys(data[i]['metric']).filter(key => key !== '__name__');
+            const metricLabelValues = Object.values(data[i]['metric']).filter(key => key !== metricName);
+            const metricLabelPairs = metricLabelNames.map((name: string, index: number) => {
+                return name + "'" + metricLabelValues[index] + "'";
+            });
+            metricNames[i] += '{' + metricLabelPairs.join(', ') + '}';
+            metricNames[i] = '"' + metricNames[i] + '"';  // wrap in quotes to avoid issues with commas
+        }
 
         let result = [metricNames];
 
-        for (let i = 0; i < numValues; i++) {
-            const row = [];
+        // get all timestamps
+        const timestamps = Array.from(new Set(metricValues.flat().map(v => v[0]))).sort();
+
+        // create row for each timestamp
+        for (let i = 0; i < timestamps.length; i++) {
+            const row = [timestamps[i]];
             for (let j = 0; j < numMetrics; j++) {
-                // first value is the timestamp, second value is the metric value
-                const value = Number.parseInt(metricValues[j][i][1]);
-                row.push(value);
+                const metricValue = metricValues[j].find((v: any) => v[0] === timestamps[i]);
+                // add metric value if it exists for timestamp, otherwise add 0.0
+                if (metricValue) {
+                    row.push(metricValue[1]);
+                } else {
+                    row.push(0.0);
+                }
             }
             result.push(row);
         }
