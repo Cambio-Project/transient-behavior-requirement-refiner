@@ -7,9 +7,9 @@ import { Response } from 'src/app/shared/psp/sel/patterns/order/response';
 import { Interval } from 'src/app/shared/psp/constraints/interval';
 import { Pattern } from 'src/app/shared/psp/sel/patterns/pattern';
 import { LogicOperator, requiresComparisonValue } from 'src/app/shared/enums/logic-operator';
-import { TimeBound } from 'src/app/shared/psp/constraints/time-bound';
 import { UpperTimeBound } from 'src/app/shared/psp/constraints/upper-time-bound';
-import { LowerTimeBound } from 'src/app/shared/psp/constraints/lower-time-bound';
+import { Absence } from 'src/app/shared/psp/sel/patterns/occurence/absence';
+import { Universality } from 'src/app/shared/psp/sel/patterns/occurence/universality';
 
 //const VERIFIER_URL = "http://localhost:5000/monitor";
 const VERIFIER_URL = "https://transient-behavior-verifier-abngcvp24a-uc.a.run.app/monitor";
@@ -62,16 +62,20 @@ export class ValidationService {
 
 	async refineTimebound(dataset: Dataset, property: Property): Promise<ValidationResponse | null> {
 		const pattern = property.getPattern();
-		if (pattern instanceof Response) {
+		if (pattern instanceof Response || pattern instanceof Absence || pattern instanceof Universality) {
 			let start = 0;
 			let end = dataset.data.length - 1;
 			const validationResponses: ValidationResponse[] = [];
 			while (start <= end) {
-
 				let mid = Math.floor((start + end) / 2);
 				const propertyCandidate = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
 				const patternCandidate = Object.assign(Object.create(Object.getPrototypeOf(pattern)), pattern);
-				patternCandidate.setSTimeBound(new Interval(new Event('Candidate' + end), 0, end, 'time units'));
+
+				if (pattern instanceof Response) {
+					patternCandidate.setSTimeBound(new Interval(new Event('Candidate' + end), 0, end, 'time units'));
+				} else if (pattern instanceof Absence || pattern instanceof Universality) {
+					patternCandidate.setPTimeBound(new UpperTimeBound(new Event('Candidate' + end), end, 'time units'));
+				}
 				propertyCandidate.setPattern(patternCandidate);
 				const validationResponse = await this.validateProperty(dataset, propertyCandidate);
 				validationResponses.push(validationResponse);
@@ -80,43 +84,14 @@ export class ValidationService {
 				} else {
 					start = mid + 1;
 				}
-
-
-				/* let mid = Math.floor((start + end) / 2);
-				const propertyCandidate = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
-				const patternCandidate = Object.assign(Object.create(Object.getPrototypeOf(pattern)), pattern);
-				patternCandidate.setSTimeBound(new Interval(new Event('Candidate' + mid), 0, mid, 'time units'));
-				propertyCandidate.setPattern(patternCandidate);
-				const validationResponse = await this.validateProperty(dataset, propertyCandidate);
-				validationResponses.push(validationResponse);
-				if (validationResponse.result === true) {
-					end = mid - 1;
-				} else {
-					start = mid + 1;
-				} */
 			}
+
 			const minimumValidationResponse = validationResponses.reverse().find(validationResponse => validationResponse.result === true);
+
 			return minimumValidationResponse || null;
 		}
 		return null;
 	}
-
-	/* async refineTimebound(dataset: Dataset, property: Property) {
-		const pattern = property.getPattern();
-		if (pattern instanceof Response) {
-			//const propertyCandidates = dataset.data.map((_, i) => {
-			const propertyCandidates = Array.from({ length: 20 }, (_, i) => i * 10).map(i => {
-				const propertyCandidate = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
-				const patternCandidate = Object.assign(Object.create(Object.getPrototypeOf(pattern)), pattern);
-				patternCandidate.setSTimeBound(new Interval(new Event('Candidate' + i), 0, i, 'time units'));
-				propertyCandidate.setPattern(patternCandidate);
-				return propertyCandidate as Property;
-			});
-
-			return Promise.all(propertyCandidates.map(propertyValidate => this.validateProperty(dataset, propertyValidate)));
-		}
-		return null;
-	} */
 
 	async refinePredicate(dataset: Dataset, predicateName: string, logicOperator: LogicOperator, property: Property) {
 		if (!requiresComparisonValue(logicOperator)) {
@@ -183,31 +158,5 @@ export class ValidationService {
 					reject(error);
 				});
 		});
-	}
-}
-
-
-
-const fixPropertyTimeContraint = (dataset: Dataset, property: Property) => {
-	const pattern = property.getPattern();
-	if (pattern instanceof Response) {
-		let timeBound = getTimeConstraint(dataset, pattern.getSTimeBound());
-		pattern.setSTimeBound(timeBound);
-	}
-}
-
-
-const getTimeConstraint = (dataset: Dataset, timeBound: TimeBound | null) => {
-	const timeUnit = 'time units';
-	const datasetLength = dataset.data.length;
-
-	if (!timeBound) {
-		return new Interval(new Event('Unconstrained Timebound'), 0, datasetLength, timeUnit);
-	} else if (timeBound instanceof UpperTimeBound) {
-		return new Interval(new Event('Upper Timebound'), 0, timeBound.getUpperLimit(), timeUnit);
-	} else if (timeBound instanceof LowerTimeBound) {
-		return new Interval(new Event('Lower Timebound'), timeBound.getLowerLimit(), datasetLength, timeUnit);
-	} else {
-		return timeBound;
 	}
 }
