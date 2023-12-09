@@ -213,19 +213,19 @@ export class DataService {
          *  tn - [value1, value2, value3]
          *  ]
          *
-         *  If a metric does not have a value at a given timestamp, the value is set to 0.0.
+         *  If a metric does not have a value at a given timestamp, the value is set to NaN.
          *
          *  @param metricValues - array of metric values
          *  @param metricNames - array of metric names
          *  @returns csv array
          */
         const timestamps = Array.from(new Set(metricValues.flat().map(v => v[0]))).sort();
-        const result = [metricNames];
+        const result = [metricNames];  // First row is metric names, CSV header
 
         for (const timestamp of timestamps) {
             const row = metricValues.map(values => {
                 const metricValue = values.find(value => value[0] === timestamp);
-                return metricValue ? metricValue[1] : 0.0;
+                return metricValue ? metricValue[1] : NaN;
             });
             result.push(row);
         }
