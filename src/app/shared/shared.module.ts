@@ -20,6 +20,7 @@ import { GraphPlotterComponent } from './components/graph-plotter/graph-plotter.
 import { CsvLoaderComponent } from './components/csv-loader/csv-loader.component';
 import { PatternFilterPipe } from './pipes/pattern-filter.pipe';
 import { CategoryFilterPipe } from './pipes/category-filter.pipe';
+import { LogicOperatorPipe } from './pipes/logic-operator.pipe';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { CategoryFilterPipe } from './pipes/category-filter.pipe';
 		GraphPlotterComponent,
 		PatternFilterPipe,
 		CategoryFilterPipe,
+		LogicOperatorPipe,
 	],
 	imports: [
 		CommonModule,
@@ -80,6 +82,7 @@ import { CategoryFilterPipe } from './pipes/category-filter.pipe';
 		// Pipes
 		PatternFilterPipe,
 		CategoryFilterPipe,
+		LogicOperatorPipe,
 	]
 })
 export class SharedModule { }
