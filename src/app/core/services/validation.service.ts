@@ -10,6 +10,7 @@ import { LogicOperator, requiresComparisonValue } from 'src/app/shared/enums/log
 import { UpperTimeBound } from 'src/app/shared/psp/constraints/upper-time-bound';
 import { Absence } from 'src/app/shared/psp/sel/patterns/occurence/absence';
 import { Universality } from 'src/app/shared/psp/sel/patterns/occurence/universality';
+import { TimeBound } from 'src/app/shared/psp/constraints/time-bound';
 
 //const VERIFIER_URL = "http://localhost:5000/monitor";
 const VERIFIER_URL = "https://transient-behavior-verifier-abngcvp24a-uc.a.run.app/monitor";
@@ -59,36 +60,60 @@ export class ValidationService {
 		});
 	}
 
-
-	async refineTimebound(dataset: Dataset, property: Property): Promise<ValidationResponse | null> {
+	async refineTimebound(dataset: Dataset, property: Property): Promise<TimeBound | null> {
 		const pattern = property.getPattern();
-		if (pattern instanceof Response || pattern instanceof Absence || pattern instanceof Universality) {
-			let start = 0;
-			let end = dataset.data.length - 1;
-			const validationResponses: ValidationResponse[] = [];
-			while (start <= end) {
-				let mid = Math.floor((start + end) / 2);
+
+		let start = 0;
+		let end = dataset.data.length - 1;
+
+		if (pattern instanceof Response) {
+			let lowerTimebound = start;
+			let upperTimebound = end;
+
+			let refinedlowerTimebound = -1;
+			let refinedUpperTimebound = -1;
+			let refinedInterval: Interval | null = null;
+			while (lowerTimebound <= end && upperTimebound <= end) {
 				const propertyCandidate = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
 				const patternCandidate = Object.assign(Object.create(Object.getPrototypeOf(pattern)), pattern);
-
-				if (pattern instanceof Response) {
-					patternCandidate.setSTimeBound(new Interval(new Event('Candidate' + end), 0, end, 'time units'));
-				} else if (pattern instanceof Absence || pattern instanceof Universality) {
-					patternCandidate.setPTimeBound(new UpperTimeBound(new Event('Candidate' + end), end, 'time units'));
-				}
+				const evaluatedTimebound = new Interval(new Event('Candidate' + lowerTimebound + ' to ' + upperTimebound), lowerTimebound, upperTimebound, 'time units');
+				patternCandidate.setSTimeBound(evaluatedTimebound);
 				propertyCandidate.setPattern(patternCandidate);
 				const validationResponse = await this.validateProperty(dataset, propertyCandidate);
-				validationResponses.push(validationResponse);
-				if (validationResponse.result === true) {
-					end = mid - 1;
-				} else {
-					start = mid + 1;
+
+				if (refinedlowerTimebound === -1) {
+					if (validationResponse.result === true) {
+						refinedInterval = evaluatedTimebound;
+						lowerTimebound++;
+					} else if (refinedInterval) {
+						refinedlowerTimebound = lowerTimebound = upperTimebound = refinedInterval.getLowerLimit();
+					}
+				} else if (refinedUpperTimebound === -1) {
+					if (validationResponse.result === true) {
+						refinedUpperTimebound = upperTimebound;
+						return evaluatedTimebound;
+					} else {
+						upperTimebound++;
+					}
 				}
 			}
-
-			const minimumValidationResponse = validationResponses.reverse().find(validationResponse => validationResponse.result === true);
-
-			return minimumValidationResponse || null;
+		} else if (pattern instanceof Absence || pattern instanceof Universality) {
+			let upperTimeboundValue = 0;
+			let refinedTimebound: TimeBound | null = null;
+			while (upperTimeboundValue <= end) {
+				const propertyCandidate = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
+				const patternCandidate = Object.assign(Object.create(Object.getPrototypeOf(pattern)), pattern);
+				const evaluatedTimebound = new UpperTimeBound(new Event('Candidate' + upperTimeboundValue), upperTimeboundValue, 'time units');
+				patternCandidate.setPTimeBound(evaluatedTimebound);
+				propertyCandidate.setPattern(patternCandidate);
+				const validationResponse = await this.validateProperty(dataset, propertyCandidate);
+				if (validationResponse.result === true) {
+					refinedTimebound = evaluatedTimebound;
+				} else if (refinedTimebound !== null) {
+					return refinedTimebound;
+				}
+				upperTimeboundValue++;
+			}
 		}
 		return null;
 	}
