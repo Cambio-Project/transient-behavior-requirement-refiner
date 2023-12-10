@@ -14,6 +14,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GraphPlotterComponent } from './components/graph-plotter/graph-plotter.component';
@@ -51,6 +52,7 @@ import { CategoryFilterPipe } from './pipes/category-filter.pipe';
 		MatDialogModule,
 		MatProgressSpinnerModule,
 		MatStepperModule,
+		MatCheckboxModule,
 	],
 	exports: [
 		// Components
@@ -76,6 +78,7 @@ import { CategoryFilterPipe } from './pipes/category-filter.pipe';
 		MatDialogModule,
 		MatProgressSpinnerModule,
 		MatStepperModule,
+		MatCheckboxModule,
 
 		// Pipes
 		PatternFilterPipe,
