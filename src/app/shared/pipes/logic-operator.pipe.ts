@@ -9,15 +9,25 @@ export class LogicOperatorPipe implements PipeTransform {
 	transform(logicOperator: LogicOperator, ...args: unknown[]): string {
 		switch (logicOperator) {
 			case LogicOperator.BIGGER:
-				return 'greater';
+				return 'greater than (>)';
 			case LogicOperator.BIGGER_EQUAL:
-				return 'greaterEqual';
+				return 'greater than or equal to (>=)';
 			case LogicOperator.SMALLER:
-				return 'less';
+				return 'less (<)';
 			case LogicOperator.SMALLER_EQUAL:
-				return 'lessEqual';
+				return 'less than or equal to (<=)';
+			case LogicOperator.DOWN:
+				return 'trend downward';
+			case LogicOperator.DOWN_STRICT:
+				return 'trend downward strict';
+			case LogicOperator.EQUAL:
+				return 'equal to (=)';
+			case LogicOperator.UP:
+				return 'trend upward';
+			case LogicOperator.UP_STRICT:
+				return 'trend upward strict';
 			default:
-				return logicOperator;
+				return 'unknown operator';
 		}
 	}
 
