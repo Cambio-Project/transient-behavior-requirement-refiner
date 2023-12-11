@@ -14,6 +14,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GraphPlotterComponent } from './components/graph-plotter/graph-plotter.component';
@@ -23,7 +24,7 @@ import { CategoryFilterPipe } from './pipes/category-filter.pipe';
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from "@angular-material-components/datetime-picker";
 import {MatDatepickerModule} from "@angular/material/datepicker";
-
+import { LogicOperatorPipe } from './pipes/logic-operator.pipe';
 
 
 @NgModule({
@@ -32,34 +33,36 @@ import {MatDatepickerModule} from "@angular/material/datepicker";
 		GraphPlotterComponent,
 		PatternFilterPipe,
 		CategoryFilterPipe,
+		LogicOperatorPipe,
 	],
-    imports: [
-        CommonModule,
+  imports: [
+      CommonModule,
 
-        // Forms
-        FormsModule,
-        ReactiveFormsModule,
+      // Forms
+      FormsModule,
+      ReactiveFormsModule,
 
-        // Material
-        MatTabsModule,
-        MatToolbarModule,
-        MatSelectModule,
-        MatInputModule,
-        MatTableModule,
-        MatCardModule,
-        MatDividerModule,
-        MatSliderModule,
-        MatButtonModule,
-        MatIconModule,
-        MatRadioModule,
-        MatDialogModule,
-        MatProgressSpinnerModule,
-        MatStepperModule,
-        MatSnackBarModule,
-        MatDatepickerModule,
-        NgxMatDatetimePickerModule,
-        NgxMatNativeDateModule,
-    ],
+      // Material
+      MatTabsModule,
+      MatToolbarModule,
+      MatSelectModule,
+      MatInputModule,
+      MatTableModule,
+      MatCardModule,
+      MatDividerModule,
+      MatSliderModule,
+      MatButtonModule,
+      MatIconModule,
+      MatRadioModule,
+      MatDialogModule,
+      MatProgressSpinnerModule,
+      MatStepperModule,
+      MatSnackBarModule,
+      MatDatepickerModule,
+      NgxMatDatetimePickerModule,
+      NgxMatNativeDateModule,
+      MatCheckboxModule,
+  ],
 	exports: [
 		// Components
 		CsvLoaderComponent,
@@ -84,11 +87,13 @@ import {MatDatepickerModule} from "@angular/material/datepicker";
 		MatDialogModule,
 		MatProgressSpinnerModule,
 		MatStepperModule,
-        MatSnackBarModule,
+    MatSnackBarModule,
+		MatCheckboxModule,
 
 		// Pipes
 		PatternFilterPipe,
 		CategoryFilterPipe,
+		LogicOperatorPipe,
 	]
 })
 export class SharedModule { }

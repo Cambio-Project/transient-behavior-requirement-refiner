@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Dataset } from '../../models/dataset';
 import { ValidationResponse } from '../../models/validation-response';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 declare var Plot: any;
 
@@ -31,9 +32,21 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 		return this._properties;
 	}
 	@Input() set properties(properties: string[] | undefined) {
-		this._properties = properties;
-		this.plot();
+		if ((!this.properties && properties) || (this.properties && properties && this.properties.length !== properties.length)) {
+			this._properties = properties?.filter(property => property !== null);
+			if (this.properties) {
+				this.selectedProperties = this.properties.map(property => {
+					return {
+						property,
+						selected: true,
+					}
+				})
+			}
+			this.plot();
+		}
 	}
+
+	selectedProperties: { property: string, selected: boolean }[] = [];
 
 	/*
 		COMPARISON VALUE
@@ -77,20 +90,19 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 	}
 
 	plot() {
-		if (!this.chart?.nativeElement) {
-			return;
-		}
+		if (!this.chart?.nativeElement) return;
 
-		const properties = this.properties?.filter(property => property !== null);
+		const properties = this.selectedProperties
+			.filter(selectedProperty => selectedProperty.selected)
+			.map(selectedProperty => selectedProperty.property);
 
 		while (this.chart.nativeElement.firstChild) this.chart.nativeElement.removeChild(this.chart.nativeElement.firstChild);
 		if (this.dataset && properties && properties.length > 0) {
-			//while (this.chart.nativeElement.firstChild) this.chart.nativeElement.removeChild(this.chart.nativeElement.firstChild);
 			this.displayPlaceholder = false;
 
-
-			// DATASET			
+			// DATASET
 			const marks = properties.map(property => Plot.line(this.dataset?.data, { x: 'time', y: property }));
+			const yAxisLabel = properties.join(', ');
 
 			// COMPARISON VALUE
 			if (!Number.isNaN(this.comparisonValue)) {
@@ -101,7 +113,7 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 			if (this.validationResponse) {
 				// TODO
 				//const height = this.dataset?.metricMax(properties[0]);				
-				const height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0));
+				const height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0)) * 1.5;
 
 				this.validationResponse.intervals.forEach(interval => {
 					const arr = Array.from({ length: interval.end - interval.start + 1 }).map((val, i) => {
@@ -120,13 +132,23 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 				width: this.width,
 				y: {
 					grid: true,
-					inset: 6
+					inset: 6,
+					label: yAxisLabel,
 				},
 				marks,
 			});
 			this.chart.nativeElement.append(plot);
 		} else {
 			this.displayPlaceholder = true;
+		}
+	}
+
+	onSelectedMetricChange(ev: MatCheckboxChange) {
+		const changedProperty = ev.source.value;
+		const selectedProperty = this.selectedProperties.find(selectedProperty => selectedProperty.property === changedProperty);
+		if (selectedProperty) {
+			selectedProperty.selected = ev.checked;
+			this.plot();
 		}
 	}
 

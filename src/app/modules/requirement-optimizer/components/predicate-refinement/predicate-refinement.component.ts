@@ -1,9 +1,9 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ValidationService } from 'src/app/core/services/validation.service';
+import { LogicOperator } from 'src/app/shared/enums/logic-operator';
 import { Dataset } from 'src/app/shared/models/dataset';
 import { ValidationResponse } from 'src/app/shared/models/validation-response';
-import { Event } from 'src/app/shared/psp/sel/event';
 import { Property } from 'src/app/shared/psp/sel/property';
 
 @Component({
@@ -17,6 +17,7 @@ export class PredicateRefinementComponent implements OnInit {
 
 	dataset: Dataset;
 	predicateName: string;
+	predicateLogicOperator: LogicOperator;
 	property: Property;
 
 	validationResponses?: ValidationResponse[];
@@ -24,11 +25,12 @@ export class PredicateRefinementComponent implements OnInit {
 
 	constructor(
 		private dialogRef: MatDialogRef<PredicateRefinementComponent>,
-		@Inject(MAT_DIALOG_DATA) private data: { dataset: Dataset, predicateName: string, property: Property },
+		@Inject(MAT_DIALOG_DATA) private data: { dataset: Dataset, predicateName: string, predicateLogicOperator: LogicOperator, property: Property },
 		private validationSvc: ValidationService,
 	) {
 		this.dataset = data.dataset;
 		this.predicateName = data.predicateName;
+		this.predicateLogicOperator = data.predicateLogicOperator;
 		this.property = data.property;
 	}
 
@@ -38,20 +40,12 @@ export class PredicateRefinementComponent implements OnInit {
 
 	async refinePredicate() {
 		this.isLoading = true;
-		console.log(this.predicateName)
-		this.validationResponses = await this.validationSvc.refinePredicate(this.dataset, this.predicateName, this.property);
+		this.validationResponses = await this.validationSvc.refinePredicate(this.dataset, this.predicateName, this.predicateLogicOperator, this.property);
 		this.isLoading = false;
-
-		this.validationResponses.forEach(res => {
-			if (res.validatedItem instanceof Property) {
-				console.log(res.validatedItem.getPattern()?.getEvents().find(predicate => predicate.getName() === this.predicateName)?.getComparisonValue());
-			}
-		})
 	}
 
-	onConfirm(index: number) {
-		this.dialogRef.close(index);
+	onConfirm(comparisonValue: number) {
+		this.dialogRef.close(comparisonValue);
 	}
-
 
 }

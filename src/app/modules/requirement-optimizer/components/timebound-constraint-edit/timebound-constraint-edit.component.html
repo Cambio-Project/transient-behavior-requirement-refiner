@@ -4,7 +4,7 @@
 		<ng-template #hasTimebound>{{ timebound?.getSpecificationAsSEL() }}.</ng-template>
 		<ng-template #noTimebound><span style="color: #ccc;">no timebound constraint</span></ng-template> -->
 		<span [style.color]="timeboundSEL === 'no timebound constraint' ? '#ccc' : '#000'">{{ timeboundSEL }}</span>
-		<button (click)="onClickRefinement()" mat-icon-button color="primary" aria-label="Requirement Refinement" style="position: absolute; top: 8px; right: 64px;">
+		<button (click)="onClickRefinement()" mat-icon-button [disabled]="!property?.valid" color="primary" aria-label="Requirement Refinement" style="position: absolute; top: 8px; right: 64px;">
 			<mat-icon>settings_suggest</mat-icon>
 		</button>
 		<button mat-icon-button (click)="editFormExpaneded = !editFormExpaneded" style="position: absolute; top: 8px; right: 12px;" aria-label="Edit">
@@ -32,7 +32,7 @@
 					</tr>
 					<tr>
 						<td>
-							<mat-radio-button value="after">after</mat-radio-button>
+							<mat-radio-button value="after" [disabled]="propertyLimitedToWithinTimebound(property)">after</mat-radio-button>
 						</td>
 						<td [style.visibility]="timeboundForm.value.type === 'after' ? 'visible' : 'hidden' ">
 							<mat-form-field appearance="fill">
@@ -42,7 +42,7 @@
 					</tr>
 					<tr>
 						<td>
-							<mat-radio-button value="between">between</mat-radio-button>
+							<mat-radio-button value="between" [disabled]="propertyLimitedToWithinTimebound(property)">between</mat-radio-button>
 						</td>
 						<td [style.visibility]="timeboundForm.value.type === 'between' ? 'visible' : 'hidden' ">
 							<mat-form-field appearance="fill">

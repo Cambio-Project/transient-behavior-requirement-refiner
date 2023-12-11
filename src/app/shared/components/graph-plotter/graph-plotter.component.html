@@ -1,2 +1,5 @@
+<div *ngIf="properties && properties.length > 1" class="selected-properties">
+	<mat-checkbox *ngFor="let selectedProperty of selectedProperties" [value]="selectedProperty.property" [checked]="selectedProperty.selected" (change)="onSelectedMetricChange($event)">{{ selectedProperty.property }}</mat-checkbox>
+</div>
 <div #chart></div>
 <div *ngIf="displayPlaceholder" [ngStyle]="{ 'height.px': height }" class="no-data">Graph</div>
