@@ -21,6 +21,9 @@ import { GraphPlotterComponent } from './components/graph-plotter/graph-plotter.
 import { CsvLoaderComponent } from './components/csv-loader/csv-loader.component';
 import { PatternFilterPipe } from './pipes/pattern-filter.pipe';
 import { CategoryFilterPipe } from './pipes/category-filter.pipe';
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { NgxMatDatetimePickerModule, NgxMatNativeDateModule } from "@angular-material-components/datetime-picker";
+import {MatDatepickerModule} from "@angular/material/datepicker";
 import { LogicOperatorPipe } from './pipes/logic-operator.pipe';
 
 
@@ -32,30 +35,34 @@ import { LogicOperatorPipe } from './pipes/logic-operator.pipe';
 		CategoryFilterPipe,
 		LogicOperatorPipe,
 	],
-	imports: [
-		CommonModule,
+  imports: [
+      CommonModule,
 
-		// Forms
-		FormsModule,
-		ReactiveFormsModule,
+      // Forms
+      FormsModule,
+      ReactiveFormsModule,
 
-		// Material
-		MatTabsModule,
-		MatToolbarModule,
-		MatSelectModule,
-		MatInputModule,
-		MatTableModule,
-		MatCardModule,
-		MatDividerModule,
-		MatSliderModule,
-		MatButtonModule,
-		MatIconModule,
-		MatRadioModule,
-		MatDialogModule,
-		MatProgressSpinnerModule,
-		MatStepperModule,
-		MatCheckboxModule,
-	],
+      // Material
+      MatTabsModule,
+      MatToolbarModule,
+      MatSelectModule,
+      MatInputModule,
+      MatTableModule,
+      MatCardModule,
+      MatDividerModule,
+      MatSliderModule,
+      MatButtonModule,
+      MatIconModule,
+      MatRadioModule,
+      MatDialogModule,
+      MatProgressSpinnerModule,
+      MatStepperModule,
+      MatSnackBarModule,
+      MatDatepickerModule,
+      NgxMatDatetimePickerModule,
+      NgxMatNativeDateModule,
+      MatCheckboxModule,
+  ],
 	exports: [
 		// Components
 		CsvLoaderComponent,
@@ -80,6 +87,7 @@ import { LogicOperatorPipe } from './pipes/logic-operator.pipe';
 		MatDialogModule,
 		MatProgressSpinnerModule,
 		MatStepperModule,
+    MatSnackBarModule,
 		MatCheckboxModule,
 
 		// Pipes

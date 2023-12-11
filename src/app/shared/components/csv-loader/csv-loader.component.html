@@ -1,37 +1,100 @@
 <h2>Select File</h2>
 
 <div class="row">
-	<div class="col-12">
-		<mat-form-field appearance="fill" style="margin-right: 16px;">
-			<mat-label>File Source</mat-label>
-			<mat-select [(ngModel)]="sourceType" value="upload">
-				<mat-option value="demo">Demo</mat-option>
-				<mat-option value="upload">Upload</mat-option>
-			</mat-select>
-		</mat-form-field>
-		<mat-form-field *ngIf="sourceType === 'demo'" appearance="fill">
-			<mat-label>Demo File</mat-label>
-			<mat-select (selectionChange)="onDemoFileChange($event)">
-				<mat-option *ngFor="let file of assetCsvFiles" [value]="file">
-					{{ file }}
-				</mat-option>
-			</mat-select>
-		</mat-form-field>
-		<input *ngIf="sourceType === 'upload'" type="file" accept=".csv" (change)="onFileSelected($event)" />
-	</div>
+    <div class="col-12">
+
+        <!-- Upload selection -->
+        <mat-form-field appearance="fill" style="margin-right: 16px;">
+            <mat-label>File Source</mat-label>
+            <mat-select [(ngModel)]="sourceType" value="upload">
+                <mat-option value="demo">Demo</mat-option>
+                <mat-option value="upload">Upload</mat-option>
+                <mat-option value="prometheus">Prometheus</mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Selection: Demo file -->
+        <mat-form-field *ngIf="sourceType === 'demo'" appearance="fill">
+            <mat-label>Demo File</mat-label>
+            <mat-select (selectionChange)="onDemoFileChange($event)">
+                <mat-option *ngFor="let file of assetCsvFiles" [value]="file">
+                    {{ file }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Selection: Custom file upload -->
+        <input *ngIf="sourceType === 'upload'" type="file" accept=".csv" (change)="onFileSelected($event)"/>
+
+        <!-- Selection: Prometheus database connection -->
+        <ng-container *ngIf="sourceType === 'prometheus'">
+            <mat-form-field appearance="fill">
+                <mat-label>Prometheus Connection URL</mat-label>
+                <input [(ngModel)]="dbUrl" matInput type="url" (keyup.enter)="onConnectButtonPressed()"/>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" (click)="onConnectButtonPressed()" style="margin-left: 8px;">
+                Connect
+            </button>
+        </ng-container>
+
+    </div>
+
+    <div class="col-12">
+        <ng-container *ngIf="sourceType === 'prometheus' && dbConnected">
+
+            <mat-form-field appearance="fill">
+                <mat-label>Choose a metric</mat-label>
+                <mat-select (selectionChange)="onMetricChange($event)" multiple>
+                    <mat-option *ngFor="let metric of dbMetricLabels" [value]="metric">
+                        {{ metric }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" style="margin-left: 16px;">
+                <mat-label>Choose a starting time</mat-label>
+                <input matInput [ngxMatDatetimePicker]="dtPickerStart" [(ngModel)]="selectedStartDatetime">
+                <mat-datepicker-toggle matSuffix [for]="$any(dtPickerStart)"></mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #dtPickerStart [showSpinners]="true" [stepHour]="1" [stepMinute]="1"
+                                         [stepSecond]="1" [enableMeridian]="true"
+                                         [showSeconds]="true"></ngx-mat-datetime-picker>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" style="margin-left: 16px;">
+                <mat-label>Choose an ending time</mat-label>
+                <input matInput [ngxMatDatetimePicker]="dtPickerEnd" [(ngModel)]="selectedEndDatetime">
+                <mat-datepicker-toggle matSuffix [for]="$any(dtPickerEnd)"></mat-datepicker-toggle>
+                <ngx-mat-datetime-picker #dtPickerEnd [showSpinners]="true" [stepHour]="1" [stepMinute]="1"
+                                         [stepSecond]="1" [enableMeridian]="true"
+                                         [showSeconds]="true"></ngx-mat-datetime-picker>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" style="margin-left: 16px;">
+                <mat-label>Choose a step size (e.g. 1m, 1h, 1d)</mat-label>
+                <input matInput type="text" [(ngModel)]="selectedStepSize">
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" (click)="onQueryButtonPressed()" style="margin-left: 8px;">
+                Query
+            </button>
+
+        </ng-container>
+
+    </div>
 </div>
 
 <mat-card style="padding: 0;">
-	<div class="table-container" *ngIf="dataset">
-		<table mat-table [dataSource]="dataset.data" class="mat-elevation-z8" style="width: 100%;">
-			<ng-container [matColumnDef]="column" *ngFor="let column of metricDefinitions; let i = index">
-				<th mat-header-cell *matHeaderCellDef> {{ column }} </th>
-				<td mat-cell *matCellDef="let val"> {{ val[column] }} </td>
-			</ng-container>
-			<tr mat-header-row *matHeaderRowDef="metricDefinitions"></tr>
-			<tr mat-row *matRowDef="let row; columns: metricDefinitions;"></tr>
-		</table>
-	</div>
+    <div class="table-container" *ngIf="dataset">
+        <table mat-table [dataSource]="dataset.data" class="mat-elevation-z8" style="width: 100%;">
+            <ng-container [matColumnDef]="column" *ngFor="let column of metricDefinitions; let i = index">
+                <th mat-header-cell *matHeaderCellDef> {{ column }} </th>
+                <td mat-cell *matCellDef="let val"> {{ val[column] }} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="metricDefinitions"></tr>
+            <tr mat-row *matRowDef="let row; columns: metricDefinitions;"></tr>
+        </table>
+    </div>
 </mat-card>
 
 
