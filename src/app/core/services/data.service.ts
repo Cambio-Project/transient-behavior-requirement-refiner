@@ -213,7 +213,7 @@ export class DataService {
          *  tn - [value1, value2, value3]
          *  ]
          *
-         *  If a metric does not have a value at a given timestamp, the value is set to NaN.
+         *  If a metric does not have a value at a given timestamp, the value is set to 0.0.
          *
          *  @param metricValues - array of metric values
          *  @param metricNames - array of metric names
@@ -225,7 +225,7 @@ export class DataService {
         for (const timestamp of timestamps) {
             const row = metricValues.map(values => {
                 const metricValue = values.find(value => value[0] === timestamp);
-                return metricValue ? metricValue[1] : NaN;
+                return metricValue ? metricValue[1] : 0.0;
             });
             result.push(row);
         }
