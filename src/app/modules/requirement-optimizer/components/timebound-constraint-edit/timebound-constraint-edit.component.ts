@@ -70,7 +70,12 @@ export class TimeboundConstraintEditComponent implements OnInit {
 					case 'unconstrained': {
 						//this.timebound = null;
 						this.timeboundSEL = 'no timebound constraint';
-						this.timebound = new Interval(new Event('Unconstrained Timebound'), 0, datasetLength, timeUnit);
+
+						if (this.propertyLimitedToWithinTimebound(this.property)) {
+							this.timebound = new UpperTimeBound(new Event('Upper Timebound'), datasetLength, timeUnit);
+						} else {
+							this.timebound = new Interval(new Event('Unconstrained Timebound'), 0, datasetLength, timeUnit);
+						}
 						performUpdate = true;
 						break;
 					}
@@ -79,7 +84,11 @@ export class TimeboundConstraintEditComponent implements OnInit {
 							//this.timebound = new UpperTimeBound(new Event('Upper Timebound'), form.end, timeUnit);
 							const timeboundDef = new UpperTimeBound(new Event('Upper Timebound'), form.end, timeUnit);
 							this.timeboundSEL = timeboundDef.getSpecificationAsSEL();
-							this.timebound = new Interval(new Event('Upper Timebound'), 0, form.end, timeUnit);
+							if (this.propertyLimitedToWithinTimebound(this.property)) {
+								this.timebound = timeboundDef;
+							} else {
+								this.timebound = new Interval(new Event('Upper Timebound'), 0, form.end, timeUnit);
+							}
 							performUpdate = true;
 						}
 						break;
@@ -87,7 +96,7 @@ export class TimeboundConstraintEditComponent implements OnInit {
 					case 'after': {
 						if (form.start !== null) {
 							//this.timebound = new LowerTimeBound(new Event('Lower Timebound'), form.start, timeUnit);
-							const timeboundDef = new LowerTimeBound(new Event('Lower Timebound'), form.start, timeUnit);;
+							const timeboundDef = new LowerTimeBound(new Event('Lower Timebound'), form.start, timeUnit);
 							this.timeboundSEL = timeboundDef.getSpecificationAsSEL();
 							this.timebound = new Interval(new Event('Lower Timebound'), form.start, datasetLength, timeUnit);
 							performUpdate = true;
@@ -107,19 +116,21 @@ export class TimeboundConstraintEditComponent implements OnInit {
 				const pattern = this.property?.getPattern();
 				if (pattern instanceof Response) {
 					pattern.setSTimeBound(this.timebound);
-				}
-				/*} else if (pattern instanceof Universality) {
+				} else if (pattern instanceof Universality || pattern instanceof Absence) {
 					pattern.setPTimeBound(this.timebound);
 				}
-				else if (pattern instanceof Absence) {
-					pattern.setPTimeBound(this.timebound);
-				} */
 
 				if (performUpdate) {
 					this.timeboundChange.emit(this.timebound);
 				}
 			});
 		this.timeboundForm.controls['type'].setValue('unconstrained');
+	}
+
+	propertyLimitedToWithinTimebound(property?: Property | null) {
+		const pattern = property?.getPattern();
+		return pattern instanceof Universality
+			|| pattern instanceof Absence;
 	}
 
 	async onClickRefinement() {
@@ -130,25 +141,22 @@ export class TimeboundConstraintEditComponent implements OnInit {
 			}
 		});
 
-		dialogRef.afterClosed().subscribe((timebound: Interval | null) => {
-			if (!timebound) {
-				return;
+		dialogRef.afterClosed().subscribe((timebound: Interval | UpperTimeBound | null) => {
+			if (timebound instanceof Interval) {
+				this.timeboundForm.patchValue({
+					type: 'between',
+					start: timebound.getLowerLimit(),
+					end: timebound.getUpperLimit(),
+					timeUnit: 'time units',
+				});
+			} else if (timebound instanceof UpperTimeBound) {
+				this.timeboundForm.patchValue({
+					type: 'within',
+					end: timebound.getUpperLimit(),
+					timeUnit: 'time units',
+				});
 			}
-			console.log(`Dialog result: ${timebound?.getSpecificationAsSEL()}`);
-			this.timeboundForm.patchValue({
-				type: 'between',
-			});
-			console.log(timebound?.getLowerLimit())
-			console.log(timebound?.getUpperLimit())
-
-			this.timeboundForm.patchValue({
-				start: timebound?.getLowerLimit(),
-				end: timebound?.getUpperLimit(),
-				timeUnit: 'time units',
-			});
-
 			console.log(this.timeboundForm.value)
-
 		});
 
 	}
