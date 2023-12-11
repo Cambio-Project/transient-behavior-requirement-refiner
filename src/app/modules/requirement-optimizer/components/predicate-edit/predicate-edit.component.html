@@ -31,7 +31,7 @@
 						<mat-label>Logic Operator</mat-label>
 						<mat-select formControlName="fLogicOperator">
 							<mat-option *ngFor="let logicOperator of LOGIC_OPERATOR_OPTIONS" [value]="logicOperator">
-								{{ logicOperator }}
+								{{ logicOperator | logicOperator }}
 							</mat-option>
 						</mat-select>
 					</mat-form-field>
@@ -41,15 +41,10 @@
 						<input matInput formControlName="fComparisonValue" type="number">
 					</mat-form-field>
 
-					<!--
-					<h4>Comparison Value: <strong>{{ predicateForm.value.fComparisonValue }}</strong></h4>
-					<mat-slider formControlName="fComparisonValue" thumbLabel [displayWith]="formatLabel" value="2" tickInterval="1" step="1" [min]="0" [max]="dataset.metricMax(predicateForm.value.fMeasurementSource)" aria-label="units" class="full-width"></mat-slider>
-					-->
-
 				</div>
-        <div #myPlot class="col-md-8" (mouseenter)="mouseEnterEvent()" (mouseleave)="mouseLeaveEvent()" (mousemove)="mouseOverEvent($event)">
-          <div class="plotMarker"></div>
-          <app-graph-plotter  [dataset]="dataset" [properties]="[predicateForm.value.fMeasurementSource]" [comparisonValue]="predicateForm.value.fComparisonValue" [validationResponse]="validationResponse" [height]="280"></app-graph-plotter>
+				<div #myPlot class="col-md-8" (mouseenter)="mouseEnterEvent()" (mouseleave)="mouseLeaveEvent()" (mousemove)="mouseOverEvent($event)">
+					<div class="plotMarker"></div>
+					<app-graph-plotter [dataset]="dataset" [properties]="[predicateForm.value.fMeasurementSource]" [comparisonValue]="predicateForm.value.fComparisonValue" [validationResponse]="validationResponse" [height]="280"></app-graph-plotter>
 				</div>
 			</div>
 		</form>
