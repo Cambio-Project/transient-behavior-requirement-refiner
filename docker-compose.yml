@@ -1,0 +1,12 @@
+version: "1"
+
+name: "TransientBehaviorRequirementOptimizer"
+
+services:
+  dashboard:
+    image: ghcr.io/cambio-project/transient-behavior-requirement-refiner:latest
+    ports:
+      - 8080:80
+
+networks:
+  dashboardNetwork:
