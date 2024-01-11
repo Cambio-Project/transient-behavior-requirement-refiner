@@ -42,7 +42,7 @@ export class PrometheusService {
     const credentials = this.authService.getCredentials();
     return new HttpHeaders({
       'Authorization': 'Basic ' + credentials,
-      'x-target-url': x_target_url,
+      'x-target-url': x_target_url
     });
   }
 
@@ -75,17 +75,18 @@ export class PrometheusService {
     this.authService.clearCredentials();
   }
 
-  setDbUrl(dbUrl: string): Promise<boolean> {
+  setDbUrl(dbUrl: string): Promise<{success: boolean, msg: string}> {
     const url = dbUrl + '/api/v1/query?query=up';
 
     return new Promise((resolve) => {
       this.get(url).subscribe(
         data => {
           this.currentUrl = dbUrl;
-          resolve(data['status'] === 'success');
+          resolve({success: true, msg: 'Successfully connected to the database!'});
         },
-        _ => {
-          resolve(false);
+        error => {
+          let msg = 'Failed connection: ' + error.status + ' (' + error.statusText + ') ';
+          resolve({success: false, msg: msg});
         }
       );
     });

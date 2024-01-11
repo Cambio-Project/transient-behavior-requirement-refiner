@@ -61,8 +61,8 @@ export class CsvLoaderComponent implements OnInit {
   }
 
   async onConnectButtonPressed() {
-    if (this.dbUseCredentials && (this.dbUsername == '' || this.dbPassword == '')) {
-      this.showSnackbar('Username and password are required!', ['mat-toolbar', 'mat-warn'])
+    if (this.dbUseCredentials && (this.dbUsername == '' || this.dbPassword == '' || this.dbProxyUrl == '')) {
+      this.showSnackbar('Please provide proxy URL and credentials!', ['mat-toolbar', 'mat-warn'])
       return;
     }
 
@@ -73,13 +73,13 @@ export class CsvLoaderComponent implements OnInit {
     }
 
     this.dataSvc.setDbUrl(this.dbUrl).then(res => {
-      if (res) {
+      if (res["success"]) {
         this.dbConnected = true;
-        this.showSnackbar('Successfully connected to the database!', ['mat-toolbar', 'mat-primary'])
+        this.showSnackbar(res["msg"], ['mat-toolbar', 'mat-primary'])
         this.loadAvailableMetrics();
       } else {
         this.dbConnected = false;
-        this.showSnackbar('Failed to connect to the database!', ['mat-toolbar', 'mat-warn'])
+        this.showSnackbar(res["msg"], ['mat-toolbar', 'mat-warn'])
       }
     });
   }
