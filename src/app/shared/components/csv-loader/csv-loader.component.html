@@ -41,43 +41,60 @@
     </div>
 
     <div class="col-12">
+
         <ng-container *ngIf="sourceType === 'prometheus' && dbConnected">
 
-            <mat-form-field appearance="fill">
-                <mat-label>Choose a metric</mat-label>
-                <mat-select (selectionChange)="onMetricChange($event)" multiple>
-                    <mat-option *ngFor="let metric of dbMetricLabels" [value]="metric">
-                        {{ metric }}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <mat-slide-toggle [(ngModel)]="dbIsCustomQuery">Custom Query</mat-slide-toggle>
+            <br>
 
-            <mat-form-field appearance="fill" style="margin-left: 16px;">
-                <mat-label>Choose a starting time</mat-label>
-                <input matInput [ngxMatDatetimePicker]="dtPickerStart" [(ngModel)]="selectedStartDatetime">
-                <mat-datepicker-toggle matSuffix [for]="$any(dtPickerStart)"></mat-datepicker-toggle>
-                <ngx-mat-datetime-picker #dtPickerStart [showSpinners]="true" [stepHour]="1" [stepMinute]="1"
-                                         [stepSecond]="1" [enableMeridian]="true"
-                                         [showSeconds]="true"></ngx-mat-datetime-picker>
-            </mat-form-field>
+            <ng-container *ngIf="!dbIsCustomQuery">
 
-            <mat-form-field appearance="fill" style="margin-left: 16px;">
-                <mat-label>Choose an ending time</mat-label>
-                <input matInput [ngxMatDatetimePicker]="dtPickerEnd" [(ngModel)]="selectedEndDatetime">
-                <mat-datepicker-toggle matSuffix [for]="$any(dtPickerEnd)"></mat-datepicker-toggle>
-                <ngx-mat-datetime-picker #dtPickerEnd [showSpinners]="true" [stepHour]="1" [stepMinute]="1"
-                                         [stepSecond]="1" [enableMeridian]="true"
-                                         [showSeconds]="true"></ngx-mat-datetime-picker>
-            </mat-form-field>
+              <mat-form-field appearance="fill">
+                  <mat-label>Choose a metric</mat-label>
+                  <mat-select (selectionChange)="onMetricChange($event)" multiple>
+                      <mat-option *ngFor="let metric of dbMetricLabels" [value]="metric">
+                          {{ metric }}
+                      </mat-option>
+                  </mat-select>
+              </mat-form-field>
 
-            <mat-form-field appearance="fill" style="margin-left: 16px;">
-                <mat-label>Choose a step size (e.g. 1m, 1h, 1d)</mat-label>
-                <input matInput type="text" [(ngModel)]="selectedStepSize">
-            </mat-form-field>
+              <mat-form-field appearance="fill" style="margin-left: 16px;">
+                  <mat-label>Choose a starting time</mat-label>
+                  <input matInput [ngxMatDatetimePicker]="dtPickerStart" [(ngModel)]="selectedStartDatetime">
+                  <mat-datepicker-toggle matSuffix [for]="$any(dtPickerStart)"></mat-datepicker-toggle>
+                  <ngx-mat-datetime-picker #dtPickerStart [showSpinners]="true" [stepHour]="1" [stepMinute]="1"
+                                           [stepSecond]="1" [enableMeridian]="true"
+                                           [showSeconds]="true"></ngx-mat-datetime-picker>
+              </mat-form-field>
 
-            <button mat-raised-button color="primary" (click)="onQueryButtonPressed()" style="margin-left: 8px;">
-                Query
-            </button>
+              <mat-form-field appearance="fill" style="margin-left: 16px;">
+                  <mat-label>Choose an ending time</mat-label>
+                  <input matInput [ngxMatDatetimePicker]="dtPickerEnd" [(ngModel)]="selectedEndDatetime">
+                  <mat-datepicker-toggle matSuffix [for]="$any(dtPickerEnd)"></mat-datepicker-toggle>
+                  <ngx-mat-datetime-picker #dtPickerEnd [showSpinners]="true" [stepHour]="1" [stepMinute]="1"
+                                           [stepSecond]="1" [enableMeridian]="true"
+                                           [showSeconds]="true"></ngx-mat-datetime-picker>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" style="margin-left: 16px;">
+                  <mat-label>Choose a step size (e.g. 1m, 1h, 1d)</mat-label>
+                  <input matInput type="text" [(ngModel)]="selectedStepSize">
+              </mat-form-field>
+
+            </ng-container>
+
+            <ng-container *ngIf="dbIsCustomQuery">
+
+              <mat-form-field appearance="fill" style="width: 50%;">
+                  <mat-label>PromQL Expression</mat-label>
+                  <input [(ngModel)]="customQuery" matInput type="text" (keyup.enter)="onQueryButtonPressed()"/>
+              </mat-form-field>
+
+            </ng-container>
+
+          <button mat-raised-button color="primary" (click)="onQueryButtonPressed()" style="margin-left: 8px;">
+            Query
+          </button>
 
         </ng-container>
 

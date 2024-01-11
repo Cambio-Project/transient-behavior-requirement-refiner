@@ -15,6 +15,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GraphPlotterComponent } from './components/graph-plotter/graph-plotter.component';
@@ -62,6 +63,7 @@ import { LogicOperatorPipe } from './pipes/logic-operator.pipe';
       NgxMatDatetimePickerModule,
       NgxMatNativeDateModule,
       MatCheckboxModule,
+      MatSlideToggleModule,
   ],
 	exports: [
 		// Components

@@ -20,7 +20,7 @@ type TupleType = [number, any]; // Adjust as per your data structure
 interface PrometheusResponse {
     status: string;
     data: string[];
-	error: string;
+	  error: string;
 }
 
 
@@ -97,7 +97,7 @@ export class DataService {
         return new Promise((resolve, reject) => {
             this.http.get<PrometheusResponse>(url).subscribe(
                 data => {
-					resolve(data['data']);
+					        resolve(data['data']);
                 },
                 error => {
                     resolve([]);
@@ -124,9 +124,29 @@ export class DataService {
             + '&end=' + encodeURIComponent(end.toISOString())
             + '&step=' + encodeURIComponent(step);
 
-		// raise error if status is not success
+		    // raise error if status is not success
+        return this.dispatchMetricQuery(url);
+    }
+
+    getMetricsCustomQuery(dbUrl: string, customQuery: string): Promise<any> {
+        /**
+         * Get metrics from prometheus database.
+         *
+         * @param dbUrl - prometheus database url
+         * @param customQuery - prometheus query
+         * @returns csv array
+         */
+        // query format: {__name__=~"metric1|metric2|metric3"}
+        const url = dbUrl
+            + '/api/v1/query?query=' + encodeURIComponent(customQuery);
+
+        // raise error if status is not success
+        return this.dispatchMetricQuery(url);
+    }
+
+    private dispatchMetricQuery(url: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.http.get<Dataset>(url).subscribe(
+            this.http.get<PrometheusResponse>(url).subscribe(
                 data => {
                     const parsed_data = this.responseToArray(data);
                     const blob_data = parsed_data.map(row => row.join(',')).join('\n');

@@ -7,7 +7,7 @@ import { MatSelectChange } from '@angular/material/select';
 @Component({
 	selector: 'app-csv-loader',
 	templateUrl: './csv-loader.component.html',
-	styleUrls: ['./csv-loader.component.scss']
+	styleUrls: ['./csv-loader.component.scss'],
 })
 export class CsvLoaderComponent implements OnInit {
 
@@ -24,6 +24,9 @@ export class CsvLoaderComponent implements OnInit {
     dbUrl: string = 'http://localhost:9090';
     dbConnected: boolean = false;
     dbMetricLabels: string[] = [];
+    dbIsCustomQuery: boolean = false;
+
+    customQuery: string = '';
     selectedStartDatetime: Date = new Date();
     selectedEndDatetime: Date = new Date();
     selectedStepSize: string = "1m";
@@ -59,13 +62,19 @@ export class CsvLoaderComponent implements OnInit {
     }
 
     async onQueryButtonPressed() {
-        await this.dataSvc.getMetrics(
-            this.dbUrl,
-            this.selectedMetrics,
-            this.selectedStartDatetime,
-            this.selectedEndDatetime,
-            this.selectedStepSize
-        ).then(res => {
+        let res: Promise<any>;
+        if (this.dbIsCustomQuery) {
+          res = this.dataSvc.getMetricsCustomQuery(this.dbUrl, this.customQuery);
+        } else {
+          res = this.dataSvc.getMetrics(
+              this.dbUrl,
+              this.selectedMetrics,
+              this.selectedStartDatetime,
+              this.selectedEndDatetime,
+              this.selectedStepSize
+          )
+        }
+        res.then(res => {
             if (res.length == 0) {
                 this.showSnackbar('No metrics found!', ['mat-toolbar', 'mat-warn']);
             } else {
