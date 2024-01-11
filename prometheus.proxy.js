@@ -36,7 +36,7 @@ app.all('/proxy', async (req, res) => {
         // Handling errors
         if (error.response) {
             // Forwarding the error response from the target server
-            return res.status(error.response.status).send(error.response.data);
+            return res.status(error.response.status).sendStatus(error.response.status);
         } else {
             return res.status(500).send({ error: error.message });
         }

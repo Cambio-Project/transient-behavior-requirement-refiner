@@ -62,7 +62,7 @@ export class DataService {
     this.prometheusService.clearCredentials();
   }
 
-  setDbUrl(dbUrl: string): Promise<boolean> {
+  setDbUrl(dbUrl: string): Promise<{success: boolean, msg: string}> {
     return this.prometheusService.setDbUrl(dbUrl);
   }
 
