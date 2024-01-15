@@ -3,7 +3,7 @@ name: Docker build and publish to GHCR
 on:
   push:
     branches:
-      - main
+      - build_performance_improvement
   release:
     types: [published] # will use tag name regardless of naming
 
@@ -36,6 +36,15 @@ jobs:
             type=ref,event=tag
             type=raw,value=latest
 
+      - name: Cache Docker layers
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
@@ -47,3 +56,5 @@ jobs:
           build-args: |
             EXECUTION_ENV=ci
             GITHUB_PACKAGE_READ_TOKEN=${{ secrets.PUBLISH_PACKAGES }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
