@@ -43,11 +43,6 @@
             </div>
 
             <div [@fadeInOut]="dbUseCredentials ? 'in' : 'out'">
-               <!-- Username -->
-                <mat-form-field *ngIf="dbUseCredentials" appearance="fill" style="margin-right: 16px">
-                    <mat-label>Proxy URL</mat-label>
-                    <input [(ngModel)]="dbProxyUrl" matInput type="text"/>
-                </mat-form-field>
 
                 <!-- Username -->
                 <mat-form-field *ngIf="dbUseCredentials" appearance="fill" style="margin-right: 16px">
