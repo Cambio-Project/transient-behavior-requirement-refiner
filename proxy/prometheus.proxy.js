@@ -4,6 +4,17 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 
+// handle arguments
+const showHelp = () => {
+console.log('Usage: node proxy.js [--docker]');
+  console.log('  --docker: proxy to host.docker.internal instead of localhost');
+  process.exit(1);
+}
+if (process.argv.indexOf('-h') > -1 || process.argv.indexOf('--help') > -1) {
+  showHelp();
+}
+const isDocker = process.argv.indexOf('--docker') > -1;
+
 // Enable CORS for all routes
 app.use(cors());
 app.use(express.json());
@@ -11,11 +22,18 @@ app.use(express.json());
 // Proxy endpoint
 app.all('/proxy', async (req, res) => {
     // Extracting target URL and basic auth credentials from headers
-    const targetUrl = req.headers['x-target-url'];
+    let targetUrl;
+    if (isDocker) {
+      targetUrl = req.headers['x-target-url'] = req.headers['x-target-url'].replace('localhost', 'host.docker.internal');
+    }
+    else {
+      targetUrl = req.headers['x-target-url'];
+    }
+
     const authHeader = req.headers['authorization']; // Basic Auth Header
 
     if (!targetUrl) {
-        return res.status(400).send({ error: 'Target URL is required' });
+      return res.status(400).send({error: 'Target URL is required'});
     }
 
     console.log(`Proxying request to ${targetUrl}`);
@@ -44,5 +62,5 @@ app.all('/proxy', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Proxy server running at http://localhost:${port}`);
+    console.log(`Proxy server running at http://localhost:${port} (docker mode: ${isDocker})`);
 });
