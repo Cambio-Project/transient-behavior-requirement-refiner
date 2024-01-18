@@ -16,75 +16,75 @@ interface MetricType {
 type TupleType = [number, any]; // Adjust as per your data structure
 
 
-
 interface PrometheusResponse {
     status: string;
-    data: string[];
-	  error: string;
+    data: any;
+    error: string;
 }
 
 
 @Injectable({
-	providedIn: 'root'
+    providedIn: 'root'
 })
 export class DataService {
 
-	constructor(
-		private papa: Papa,
-		private http: HttpClient,
-	) { }
+    constructor(
+        private papa: Papa,
+        private http: HttpClient,
+    ) {
+    }
 
-	parseCsvFile(file: File) {
-		return new Promise<Dataset>((resolve, reject) => {
-			this.papa.parse(file, {
-				delimiter: ',',
-				complete: result => {
-					const dataset = new Dataset(result.data, file);
-					resolve(dataset);
-				},
-				error: (err, file) => {
-					reject(err);
-				},
-			});
-		});
-	}
+    parseCsvFile(file: File) {
+        return new Promise<Dataset>((resolve, reject) => {
+            this.papa.parse(file, {
+                delimiter: ',',
+                complete: result => {
+                    const dataset = new Dataset(result.data, file);
+                    resolve(dataset);
+                },
+                error: (err, file) => {
+                    reject(err);
+                },
+            });
+        });
+    }
 
-	parseCsvFileFromAssets(fileName: string) {
-		return new Promise<Dataset>((resolve, reject) => {
-			this.http.get(`assets/csv/${fileName}`, { responseType: 'arraybuffer' })
-				.subscribe(async data => {
-					const file = this.blobToFile(data, fileName);
-					try {
-						const dataset = await this.parseCsvFile(file);
-						resolve(dataset);
-					} catch (err) {
-						reject(err);
-					}
-				});
-		});
-	}
+    parseCsvFileFromAssets(fileName: string) {
+        return new Promise<Dataset>((resolve, reject) => {
+            this.http.get(`assets/csv/${fileName}`, {responseType: 'arraybuffer'})
+                .subscribe(async data => {
+                    const file = this.blobToFile(data, fileName);
+                    try {
+                        const dataset = await this.parseCsvFile(file);
+                        resolve(dataset);
+                    } catch (err) {
+                        reject(err);
+                    }
+                });
+        });
+    }
 
-	blobToFile = (data: ArrayBuffer, fileName: string): File => {
-		const blob: any = new Blob([data]);
-		var b: any = blob;
-		b.lastModifiedDate = new Date();
-		b.name = fileName;
-		return <File>blob;
-	}
+    blobToFile = (data: ArrayBuffer, fileName: string): File => {
+        const blob: any = new Blob([data]);
+        var b: any = blob;
+        b.lastModifiedDate = new Date();
+        b.name = fileName;
+        return <File>blob;
+    }
 
-	setDbUrl(dbUrl: string): Promise<boolean> {
-		const url = dbUrl + '/api/v1/query?query=up';
-		return new Promise((resolve, reject) => {
-			this.http.get<PrometheusResponse>(url).subscribe(
-				data => {
-					resolve(true);
-				},
-				error => {
-					resolve(false);
-				}
-			);
-		});
-	}
+    setDbUrl(dbUrl: string): Promise<boolean> {
+        const url = dbUrl + '/api/v1/query?query=up';
+        return new Promise((resolve, reject) => {
+            this.http.get<PrometheusResponse>(url).subscribe(
+                data => {
+                    resolve(true);
+                },
+                error => {
+                    resolve(false);
+                }
+            );
+        });
+    }
 
     getAvailableMetrics(dbUrl: string): Promise<string[]> {
         /**
@@ -97,7 +97,7 @@ export class DataService {
         return new Promise((resolve, reject) => {
             this.http.get<PrometheusResponse>(url).subscribe(
                 data => {
-					        resolve(data['data']);
+                    resolve(data['data']);
                 },
                 error => {
                     resolve([]);
@@ -106,25 +106,26 @@ export class DataService {
         });
     }
 
-    getMetrics(dbUrl: string, metrics: string[], start: Date, end: Date, step: string): Promise<any> {
+    getMetrics(dbUrl: string, query: string, start: Date, end: Date, step: string): Promise<any> {
         /**
-         * Get metrics from prometheus database.
+         * Get query from prometheus database.
          *
-         * @param dbUrl - prometheus database url
-         * @param metrics - array of metric names
+         * @param dbUrl - prometheus database url query
+         * @param query - array of metric names
          * @param start - start date
          * @param end - end date
          * @param step - step size
          * @returns csv array
          */
-        // query format: {__name__=~"metric1|metric2|metric3"}
+            // query format: {__name__=~"metric1|metric2|metric3"}
         const url = dbUrl
-            + '/api/v1/query_range?query=' + encodeURIComponent('{__name__=~"' + metrics.join('|') + '"}')
-            + '&start=' + encodeURIComponent(start.toISOString())
-            + '&end=' + encodeURIComponent(end.toISOString())
-            + '&step=' + encodeURIComponent(step);
+                + '/api/v1/query_range'
+                + '?query=' + encodeURIComponent(query)
+                + '&start=' + encodeURIComponent(start.toISOString())
+                + '&end=' + encodeURIComponent(end.toISOString())
+                + '&step=' + encodeURIComponent(step);
 
-		    // raise error if status is not success
+        // raise error if status is not success
         return this.dispatchMetricQuery(url);
     }
 
@@ -136,9 +137,9 @@ export class DataService {
          * @param customQuery - prometheus query
          * @returns csv array
          */
-        // query format: {__name__=~"metric1|metric2|metric3"}
+            // query format: {__name__=~"metric1|metric2|metric3"}
         const url = dbUrl
-            + '/api/v1/query?query=' + encodeURIComponent(customQuery);
+                + '/api/v1/query?query=' + encodeURIComponent(customQuery);
 
         // raise error if status is not success
         return this.dispatchMetricQuery(url);
@@ -148,19 +149,35 @@ export class DataService {
         return new Promise((resolve, reject) => {
             this.http.get<PrometheusResponse>(url).subscribe(
                 data => {
-                    const parsed_data = this.responseToArray(data);
-                    const blob_data = parsed_data.map(row => row.join(',')).join('\n');
-                    const dataset = new Dataset(
-                        parsed_data,
-                        new File([blob_data], 'metrics.csv')
-                    );
-                    resolve(dataset);
+                    const metricData: MetricType[] = data['data']['result'];
+                    if (!metricData.length) {
+                        reject('No metrics found!');
+                    }
+                    console.log(data);
+                    resolve(this.metricToDataset(metricData));
                 },
                 error => {
                     reject(error);
                 }
             );
         });
+    }
+
+    private metricToDataset(metricData: any): Dataset {
+        /**
+         * Convert prometheus response to csv array
+         *
+         * @param metricData - prometheus metric data
+         * @returns csv array
+         */
+        const [metricNames, metricValues] = this.extractMetricNamesAndValues(metricData);
+        this.attachMetricProperties(metricNames, metricData);
+        const csvArray = this.aggregateTimestamps(metricValues, metricNames);
+        const blob_data = csvArray.map(row => row.join(',')).join('\n');
+        return new Dataset(
+            csvArray,
+            new File([blob_data], 'metrics.csv')
+        );
     }
 
     private responseToArray(response: any): any[] {
@@ -254,20 +271,20 @@ export class DataService {
     }
 
 
-	generateUUID() {
-		var d = new Date().getTime();//Timestamp
-		var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-		return 'p' + 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-			var r = Math.random() * 16;//random number between 0 and 16
-			if (d > 0) {//Use timestamp until depleted
-				r = (d + r) % 16 | 0;
-				d = Math.floor(d / 16);
-			} else {//Use microseconds since page-load if supported
-				r = (d2 + r) % 16 | 0;
-				d2 = Math.floor(d2 / 16);
-			}
-			return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-		});
-	}
+    generateUUID() {
+        var d = new Date().getTime();//Timestamp
+        var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+        return 'p' + 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16;//random number between 0 and 16
+            if (d > 0) {//Use timestamp until depleted
+                r = (d + r) % 16 | 0;
+                d = Math.floor(d / 16);
+            } else {//Use microseconds since page-load if supported
+                r = (d2 + r) % 16 | 0;
+                d2 = Math.floor(d2 / 16);
+            }
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+    }
 
 }
