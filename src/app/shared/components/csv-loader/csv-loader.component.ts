@@ -110,7 +110,6 @@ export class CsvLoaderComponent implements OnInit {
             let joinedMetrics = this.selectedMetrics.join('|');
             query = '{__name__=~"' + joinedMetrics + '"}';
         }
-        console.log(query);
         return query;
     }
 

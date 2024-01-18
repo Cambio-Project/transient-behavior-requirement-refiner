@@ -146,7 +146,6 @@ export class DataService {
         // Look for a series of characters that are not closing braces (to exclude labels),
         // followed by the range vector syntax, ensuring it's not part of a label value.
         const rangeVectorRegex = /[^}]*\[\s*\d+[smhdwy]\s*]/;
-        console.log(rangeVectorRegex.test(query));
         return rangeVectorRegex.test(query)
     }
 
