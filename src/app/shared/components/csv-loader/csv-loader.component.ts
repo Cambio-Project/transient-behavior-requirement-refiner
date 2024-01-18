@@ -62,19 +62,15 @@ export class CsvLoaderComponent implements OnInit {
     }
 
     async onQueryButtonPressed() {
-        let res: Promise<any>;
-        if (this.dbIsCustomQuery) {
-          res = this.dataSvc.getMetricsCustomQuery(this.dbUrl, this.customQuery);
-        } else {
-          res = this.dataSvc.getMetrics(
-              this.dbUrl,
-              this.selectedMetrics,
-              this.selectedStartDatetime,
-              this.selectedEndDatetime,
-              this.selectedStepSize
-          )
-        }
-        res.then(res => {
+        const query = this.getQuery();
+
+        this.dataSvc.getMetrics(
+            this.dbUrl,
+            query,
+            this.selectedStartDatetime,
+            this.selectedEndDatetime,
+            this.selectedStepSize
+        ).then(res => {
             if (res.length == 0) {
                 this.showSnackbar('No metrics found!', ['mat-toolbar', 'mat-warn']);
             } else {
@@ -86,6 +82,17 @@ export class CsvLoaderComponent implements OnInit {
         })
     }
 
+    private getQuery() {
+        let query: string;
+        if (this.dbIsCustomQuery) {
+            query = this.customQuery;
+        } else {
+            let joinedMetrics = this.selectedMetrics.join('|');
+            query = '{__name__=~"' + joinedMetrics + '"}';
+        }
+        console.log(query);
+        return query;
+    }
 
     async onMetricChange(event: MatSelectChange) {
         this.selectedMetrics = event.value;
