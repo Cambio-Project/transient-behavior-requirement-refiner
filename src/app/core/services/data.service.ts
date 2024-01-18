@@ -145,6 +145,19 @@ export class DataService {
         return this.dispatchMetricQuery(url);
     }
 
+    private queryType(query: string): string {
+        // Regular expression to match range vector syntax outside of labels
+        // Look for a series of characters that are not closing braces (to exclude labels),
+        // followed by the range vector syntax, ensuring it's not part of a label value.
+        const rangeVectorRegex = /[^}]*\[\s*\d+[smhdwy]\s*]/;
+
+        if (rangeVectorRegex.test(query)) {
+            return 'Range Vector';
+        } else {
+            return 'Instant Vector';
+        }
+    }
+
     private dispatchMetricQuery(url: string): Promise<any> {
         return new Promise((resolve, reject) => {
             this.http.get<PrometheusResponse>(url).subscribe(
