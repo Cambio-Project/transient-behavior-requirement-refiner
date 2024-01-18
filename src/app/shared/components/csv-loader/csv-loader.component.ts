@@ -90,7 +90,6 @@ export class CsvLoaderComponent implements OnInit {
     async onQueryButtonPressed() {
         const query = this.getQuery();
         let res = this.dataSvc.getMetrics(
-            this.dbUrl,
             query,
             this.selectedStartDatetime,
             this.selectedEndDatetime,
@@ -117,6 +116,24 @@ export class CsvLoaderComponent implements OnInit {
         })
     }
 
+    onShiftEnter(event: any) {
+        const target = event.target as HTMLTextAreaElement;
+        const value = target.value;
+        const start = target.selectionStart;
+        const end = target.selectionEnd;
+        target.value = value.substring(0, start) + '\n' + value.substring(end);
+        target.selectionStart = target.selectionEnd = start + 1;
+        event.preventDefault();
+    }
+
+    getQuery(): string {
+        if (this.dbIsCustomQuery) {
+            return this.customQuery;
+        } else {
+            let joinedMetrics = this.selectedMetrics.join('|');
+            return `{__name__=~"${joinedMetrics}"}`;
+        }
+    }
 
     async onMetricChange(event: MatSelectChange) {
         this.selectedMetrics = event.value;
@@ -133,7 +150,7 @@ export class CsvLoaderComponent implements OnInit {
     }
 
     async loadAvailableMetrics() {
-        this.dbMetricLabels = await this.dataSvc.getAvailableMetrics(this.dbUrl);
+        this.dbMetricLabels = await this.dataSvc.getAvailableMetrics();
     }
 
     setDataset(dataset: Dataset) {
