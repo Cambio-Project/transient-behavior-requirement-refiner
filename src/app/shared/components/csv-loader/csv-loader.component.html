@@ -99,7 +99,7 @@
                             matInput type="text"
                             cdkTextareaAutosize cdkAutosizeMaxRows="20" cdkAutosizeMinRows="1"
                             (keydown.enter)="$event.preventDefault(); onQueryButtonPressed()"
-                            (keydown.control.enter)="onCtrlEnter($event)"
+                            (keydown.shift.enter)="onShiftEnter($event)"
                         >
                     </textarea>
                     </mat-form-field>

@@ -92,7 +92,7 @@ export class CsvLoaderComponent implements OnInit {
         })
     }
 
-    onCtrlEnter(event: any) {
+    onShiftEnter(event: any) {
         const target = event.target as HTMLTextAreaElement;
         const value = target.value;
         const start = target.selectionStart;
