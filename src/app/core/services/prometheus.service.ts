@@ -55,7 +55,6 @@ export class PrometheusService {
          * @param url - prometheus database url
          * @returns prometheus response
          **/
-
         if (this.useCredentials) {
             return this.http.get<PrometheusResponse>(this.proxyUrl, {headers: this.getAuthHeaders(url)});
         } else {
@@ -140,7 +139,7 @@ export class PrometheusService {
 
     private dispatchMetricQuery(url: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            this.http.get<PrometheusResponse>(url).subscribe(
+            this.get(url).subscribe(
                 data => {
                     const metricData: MetricType[] = data['data']['result'];
                     if (!metricData.length) {
