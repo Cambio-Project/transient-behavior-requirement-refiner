@@ -106,7 +106,11 @@ export class DataService {
         });
     }
 
-    getMetrics(dbUrl: string, query: string, start: Date, end: Date, step: string): Promise<any> {
+    getMetrics(dbUrl: string, query: string, start: Date, end: Date, step: string): {
+        queryType: string,
+        query: string,
+        data: Promise<any>
+    } {
         /**
          * Get query from prometheus database.
          *
@@ -115,47 +119,35 @@ export class DataService {
          * @param start - start date
          * @param end - end date
          * @param step - step size
-         * @returns csv array
+         * @returns query type, query, and data promise
          */
-            // query format: {__name__=~"metric1|metric2|metric3"}
-        const url = dbUrl
+        let url: string;
+        const queryType: string = this.isRangeVector(query) ? 'range' : 'instant';
+
+        if (queryType === 'range') {
+            url = dbUrl + '/api/v1/query?query=' + encodeURIComponent(query);
+        } else {
+            url = dbUrl
                 + '/api/v1/query_range'
                 + '?query=' + encodeURIComponent(query)
                 + '&start=' + encodeURIComponent(start.toISOString())
                 + '&end=' + encodeURIComponent(end.toISOString())
                 + '&step=' + encodeURIComponent(step);
-
-        // raise error if status is not success
-        return this.dispatchMetricQuery(url);
+        }
+        return {
+            queryType: queryType,
+            query: query,
+            data: this.dispatchMetricQuery(url)
+        };
     }
 
-    getMetricsCustomQuery(dbUrl: string, customQuery: string): Promise<any> {
-        /**
-         * Get metrics from prometheus database.
-         *
-         * @param dbUrl - prometheus database url
-         * @param customQuery - prometheus query
-         * @returns csv array
-         */
-            // query format: {__name__=~"metric1|metric2|metric3"}
-        const url = dbUrl
-                + '/api/v1/query?query=' + encodeURIComponent(customQuery);
-
-        // raise error if status is not success
-        return this.dispatchMetricQuery(url);
-    }
-
-    private queryType(query: string): string {
+    private isRangeVector(query: string): boolean {
         // Regular expression to match range vector syntax outside of labels
         // Look for a series of characters that are not closing braces (to exclude labels),
         // followed by the range vector syntax, ensuring it's not part of a label value.
         const rangeVectorRegex = /[^}]*\[\s*\d+[smhdwy]\s*]/;
-
-        if (rangeVectorRegex.test(query)) {
-            return 'Range Vector';
-        } else {
-            return 'Instant Vector';
-        }
+        console.log(rangeVectorRegex.test(query));
+        return rangeVectorRegex.test(query)
     }
 
     private dispatchMetricQuery(url: string): Promise<any> {
@@ -166,11 +158,10 @@ export class DataService {
                     if (!metricData.length) {
                         reject('No metrics found!');
                     }
-                    console.log(data);
                     resolve(this.metricToDataset(metricData));
                 },
                 error => {
-                    reject(error);
+                    reject(error.error);
                 }
             );
         });
@@ -191,23 +182,6 @@ export class DataService {
             csvArray,
             new File([blob_data], 'metrics.csv')
         );
-    }
-
-    private responseToArray(response: any): any[] {
-        /**
-         * Convert prometheus response to csv array
-         *
-         * @param response - prometheus response
-         * @returns csv array
-         */
-        const data: MetricType[] = response['data']['result'];
-        if (!data.length) {
-            return [];
-        }
-
-        const [metricNames, metricValues] = this.extractMetricNamesAndValues(data);
-        this.attachMetricProperties(metricNames, data);
-        return this.aggregateTimestamps(metricValues, metricNames);
     }
 
     private extractMetricNamesAndValues(data: MetricType[]): [string[], TupleType[][]] {
