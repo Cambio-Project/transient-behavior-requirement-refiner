@@ -33,9 +33,30 @@
                 <input [(ngModel)]="dbUrl" matInput type="url" (keyup.enter)="onConnectButtonPressed()"/>
             </mat-form-field>
 
-            <button mat-raised-button color="primary" (click)="onConnectButtonPressed()" style="margin-left: 8px;">
+            <button mat-raised-button color="primary" (click)="onConnectButtonPressed()" style="margin-left: 16px;">
                 Connect
             </button>
+
+            <!-- Checkbox to toggle credential fields -->
+            <div>
+                <mat-checkbox [(ngModel)]="dbUseCredentials">Provide Credentials</mat-checkbox>
+            </div>
+
+            <div [@fadeInOut]="dbUseCredentials ? 'in' : 'out'">
+
+                <!-- Username -->
+                <mat-form-field *ngIf="dbUseCredentials" appearance="fill" style="margin-right: 16px">
+                    <mat-label>Username</mat-label>
+                    <input [(ngModel)]="dbUsername" matInput type="text"/>
+                </mat-form-field>
+
+                <!-- Password -->
+                <mat-form-field *ngIf="dbUseCredentials" appearance="fill">
+                    <mat-label>Password</mat-label>
+                    <input [(ngModel)]="dbPassword" matInput type="password"/>
+                </mat-form-field>
+            </div>
+
         </ng-container>
 
     </div>
@@ -43,6 +64,8 @@
     <div class="col-12">
 
         <ng-container *ngIf="sourceType === 'prometheus' && dbConnected">
+
+            <mat-divider style="margin-top: 16px; margin-bottom: 16px"></mat-divider>
 
             <mat-slide-toggle [(ngModel)]="dbIsCustomQuery">Custom Query</mat-slide-toggle>
             <br>

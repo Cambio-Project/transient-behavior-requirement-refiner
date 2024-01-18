@@ -3,11 +3,21 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {Dataset} from '../../models/dataset';
 import {DataService} from '../../../core/services/data.service';
 import {MatSelectChange} from '@angular/material/select';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+
 
 @Component({
-    selector: 'app-csv-loader',
-    templateUrl: './csv-loader.component.html',
-    styleUrls: ['./csv-loader.component.scss'],
+  selector: 'app-csv-loader',
+  templateUrl: './csv-loader.component.html',
+  styleUrls: ['./csv-loader.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      state('in', style({ opacity: 1, height: '*' })),
+      state('out', style({ opacity: 0, height: '0px' })),
+      transition('out => in', animate('200ms ease-in')),
+      transition('in => out', animate('200ms ease-out'))
+    ])
+  ]
 })
 export class CsvLoaderComponent implements OnInit {
 
@@ -22,6 +32,10 @@ export class CsvLoaderComponent implements OnInit {
     ];
 
     dbUrl: string = 'http://localhost:9090';
+    dbProxyUrl: string = 'http://localhost:3000/proxy';
+    dbUseCredentials: boolean = false;
+    dbUsername: string = '';
+    dbPassword: string = '';
     dbConnected: boolean = false;
     dbMetricLabels: string[] = [];
     dbIsCustomQuery: boolean = false;
@@ -49,21 +63,29 @@ export class CsvLoaderComponent implements OnInit {
         this.loadCsvFileFromAssets(fileName);
     }
 
-    async onConnectButtonPressed() {
-        this.dataSvc.setDbUrl(this.dbUrl).then(res => {
-            if (res) {
-                this.dbConnected = true;
-                this.showSnackbar(
-                    'Successfully connected to the database!',
-                    ['mat-toolbar', 'mat-primary']
-                )
-                this.loadAvailableMetrics();
-            } else {
-                this.dbConnected = false;
-                this.showSnackbar('Failed to connect to the database!', ['mat-toolbar', 'mat-warn'])
-            }
-        });
+  async onConnectButtonPressed() {
+    if (this.dbUseCredentials && (this.dbUsername == '' || this.dbPassword == '' || this.dbProxyUrl == '')) {
+      this.showSnackbar('Please provide proxy URL and credentials!', ['mat-toolbar', 'mat-warn'])
+      return;
     }
+
+    if (this.dbUseCredentials) {
+      this.dataSvc.setCredentials(this.dbProxyUrl, this.dbUsername, this.dbPassword);
+    } else {
+      this.dataSvc.clearCredentials();
+    }
+
+    this.dataSvc.setDbUrl(this.dbUrl).then(res => {
+      if (res["success"]) {
+        this.dbConnected = true;
+        this.showSnackbar(res["msg"], ['mat-toolbar', 'mat-primary'])
+        this.loadAvailableMetrics();
+      } else {
+        this.dbConnected = false;
+        this.showSnackbar(res["msg"], ['mat-toolbar', 'mat-warn'])
+      }
+    });
+  }
 
     async onQueryButtonPressed() {
         const query = this.getQuery();
@@ -95,26 +117,6 @@ export class CsvLoaderComponent implements OnInit {
         })
     }
 
-    onShiftEnter(event: any) {
-        const target = event.target as HTMLTextAreaElement;
-        const value = target.value;
-        const start = target.selectionStart;
-        const end = target.selectionEnd;
-        target.value = value.substring(0, start) + '\n' + value.substring(end);
-        target.selectionStart = target.selectionEnd = start + 1;
-        event.preventDefault();
-    }
-
-    private getQuery() {
-        let query: string;
-        if (this.dbIsCustomQuery) {
-            query = this.customQuery;
-        } else {
-            let joinedMetrics = this.selectedMetrics.join('|');
-            query = '{__name__=~"' + joinedMetrics + '"}';
-        }
-        return query;
-    }
 
     async onMetricChange(event: MatSelectChange) {
         this.selectedMetrics = event.value;
