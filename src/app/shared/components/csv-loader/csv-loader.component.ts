@@ -82,7 +82,10 @@ export class CsvLoaderComponent implements OnInit {
         }
         res.data.then(res => {
             if (res.length == 0) {
-                this.showSnackbar('No metrics found!', ['mat-toolbar', 'mat-info']);
+                this.showSnackbar(
+                    'No metrics found for given query and parameters!',
+                    ['mat-toolbar', 'mat-info']
+                );
             } else {
                 this.setDataset(res);
             }
@@ -138,7 +141,7 @@ export class CsvLoaderComponent implements OnInit {
     }
 
     private showSnackbar(message: string, panelClass: string[]) {
-        this.snackBar.open(message, 'Close', {duration: 5000, panelClass: panelClass});
+        this.snackBar.open(message, 'Close', {duration: 6000, panelClass: panelClass});
     }
 
 }

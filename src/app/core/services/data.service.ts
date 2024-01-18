@@ -155,7 +155,7 @@ export class DataService {
                 data => {
                     const metricData: MetricType[] = data['data']['result'];
                     if (!metricData.length) {
-                        reject('No metrics found!');
+                        reject({error: 'No metrics found!'});
                     }
                     resolve(this.metricToDataset(metricData));
                 },
