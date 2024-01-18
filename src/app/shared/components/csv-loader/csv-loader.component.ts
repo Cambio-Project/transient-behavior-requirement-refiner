@@ -3,21 +3,21 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {Dataset} from '../../models/dataset';
 import {DataService} from '../../../core/services/data.service';
 import {MatSelectChange} from '@angular/material/select';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import {trigger, state, style, transition, animate} from '@angular/animations';
 
 
 @Component({
-  selector: 'app-csv-loader',
-  templateUrl: './csv-loader.component.html',
-  styleUrls: ['./csv-loader.component.scss'],
-  animations: [
-    trigger('fadeInOut', [
-      state('in', style({ opacity: 1, height: '*' })),
-      state('out', style({ opacity: 0, height: '0px' })),
-      transition('out => in', animate('200ms ease-in')),
-      transition('in => out', animate('200ms ease-out'))
-    ])
-  ]
+    selector: 'app-csv-loader',
+    templateUrl: './csv-loader.component.html',
+    styleUrls: ['./csv-loader.component.scss'],
+    animations: [
+        trigger('fadeInOut', [
+            state('in', style({opacity: 1, height: '*'})),
+            state('out', style({opacity: 0, height: '0px'})),
+            transition('out => in', animate('200ms ease-in')),
+            transition('in => out', animate('200ms ease-out'))
+        ])
+    ]
 })
 export class CsvLoaderComponent implements OnInit {
 
@@ -63,29 +63,29 @@ export class CsvLoaderComponent implements OnInit {
         this.loadCsvFileFromAssets(fileName);
     }
 
-  async onConnectButtonPressed() {
-    if (this.dbUseCredentials && (this.dbUsername == '' || this.dbPassword == '' || this.dbProxyUrl == '')) {
-      this.showSnackbar('Please provide proxy URL and credentials!', ['mat-toolbar', 'mat-warn'])
-      return;
-    }
+    async onConnectButtonPressed() {
+        if (this.dbUseCredentials && (this.dbUsername == '' || this.dbPassword == '' || this.dbProxyUrl == '')) {
+            this.showSnackbar('Please provide proxy URL and credentials!', ['mat-toolbar', 'mat-warn'])
+            return;
+        }
 
-    if (this.dbUseCredentials) {
-      this.dataSvc.setCredentials(this.dbProxyUrl, this.dbUsername, this.dbPassword);
-    } else {
-      this.dataSvc.clearCredentials();
-    }
+        if (this.dbUseCredentials) {
+            this.dataSvc.setCredentials(this.dbProxyUrl, this.dbUsername, this.dbPassword);
+        } else {
+            this.dataSvc.clearCredentials();
+        }
 
-    this.dataSvc.setDbUrl(this.dbUrl).then(res => {
-      if (res["success"]) {
-        this.dbConnected = true;
-        this.showSnackbar(res["msg"], ['mat-toolbar', 'mat-primary'])
-        this.loadAvailableMetrics();
-      } else {
-        this.dbConnected = false;
-        this.showSnackbar(res["msg"], ['mat-toolbar', 'mat-warn'])
-      }
-    });
-  }
+        this.dataSvc.setDbUrl(this.dbUrl).then(res => {
+            if (res["success"]) {
+                this.dbConnected = true;
+                this.showSnackbar(res["msg"], ['mat-toolbar', 'mat-primary'])
+                this.loadAvailableMetrics();
+            } else {
+                this.dbConnected = false;
+                this.showSnackbar(res["msg"], ['mat-toolbar', 'mat-warn'])
+            }
+        });
+    }
 
     async onQueryButtonPressed() {
         const query = this.getQuery();
