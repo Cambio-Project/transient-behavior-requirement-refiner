@@ -97,7 +97,10 @@
                         <textarea
                             [(ngModel)]="customQuery"
                             matInput type="text"
-                            cdkTextareaAutosize cdkAutosizeMaxRows="20" cdkAutosizeMinRows="7">
+                            cdkTextareaAutosize cdkAutosizeMaxRows="20" cdkAutosizeMinRows="1"
+                            (keydown.enter)="$event.preventDefault(); onQueryButtonPressed()"
+                            (keydown.control.enter)="onCtrlEnter($event)"
+                        >
                     </textarea>
                     </mat-form-field>
 

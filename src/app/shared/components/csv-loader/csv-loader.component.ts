@@ -92,6 +92,16 @@ export class CsvLoaderComponent implements OnInit {
         })
     }
 
+    onCtrlEnter(event: any) {
+        const target = event.target as HTMLTextAreaElement;
+        const value = target.value;
+        const start = target.selectionStart;
+        const end = target.selectionEnd;
+        target.value = value.substring(0, start) + '\n' + value.substring(end);
+        target.selectionStart = target.selectionEnd = start + 1;
+        event.preventDefault();
+    }
+
     private getQuery() {
         let query: string;
         if (this.dbIsCustomQuery) {
