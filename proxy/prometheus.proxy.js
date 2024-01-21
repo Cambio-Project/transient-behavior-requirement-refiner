@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-const {isUndefined} = require("karma/common/util");
+const stream = require("stream");
 const app = express();
 const port = 3000;
 
@@ -53,7 +53,7 @@ app.all('/proxy', async (req, res) => {
 
     if (
         !req.headers['x-target-url']
-        || isUndefined(req.headers['x-target-url'])
+        || req.headers['x-target-url'] === undefined
     ) {
       return res.status(400).send({error: 'Target URL is required'});
     }
