@@ -4,6 +4,7 @@ import { ValidationResponse } from '../../models/validation-response';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
 declare var Plot: any;
+declare var d3: any;
 
 @Component({
 	selector: 'app-graph-plotter',
@@ -80,7 +81,6 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 
 	displayPlaceholder: boolean = true;
 
-
 	constructor() { }
 
 	ngOnInit(): void { }
@@ -101,8 +101,40 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 			this.displayPlaceholder = false;
 
 			// DATASET
-			const marks = properties.map(property => Plot.line(this.dataset?.data, { x: 'time', y: property }));
-			const yAxisLabel = properties.join(', ');
+
+			let yAxis;
+			const marks = [];
+
+			// Display 2 Y-Axis when pattern has exactly two properties
+			if (properties.length === 2) {
+				// Primary Y-Axis
+				yAxis = {
+					axis: "left",
+					label: properties[0],
+					grid: true,
+					inset: 6,
+				};
+
+				// Secondary Y-Axis
+				const property0 = (d: any) => d[properties[0]];
+				const property1 = (d: any) => d[properties[1]];
+				const secondaryYAxis = d3.scaleLinear(d3.extent(this.dataset?.data, property1), [0, d3.max(this.dataset?.data, property0)]);
+				const secondaryYAxisColor = '#C576F6';
+
+				marks.push(
+					Plot.axisY(secondaryYAxis.ticks(), { color: secondaryYAxisColor, anchor: "right", label: properties[1], y: secondaryYAxis, tickFormat: secondaryYAxis.tickFormat() }),
+					Plot.ruleY([0]),
+					Plot.lineY(this.dataset?.data, { x: "time", y: property0 }),
+					Plot.lineY(this.dataset?.data, Plot.mapY((D: any) => D.map(secondaryYAxis), { x: "time", y: property1, stroke: secondaryYAxisColor }))
+				);
+			} else {
+				marks.push(...properties.map(property => Plot.line(this.dataset?.data, { x: 'time', y: property })));
+				yAxis = {
+					grid: true,
+					inset: 6,
+					label: properties.join(', '),
+				};
+			}
 
 			// COMPARISON VALUE
 			if (!Number.isNaN(this.comparisonValue)) {
@@ -111,10 +143,13 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 
 			// VALIDATION RESPONSE
 			if (this.validationResponse) {
-				// TODO
-				//const height = this.dataset?.metricMax(properties[0]);				
-				const height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0)) * 1.5;
-
+				let height = 0;
+				if(properties.length === 2)	{
+					height = this.dataset?.metricMax(properties[0]);
+				}	else {
+					height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0)) * 1.5;
+				}
+				
 				this.validationResponse.intervals.forEach(interval => {
 					const arr = Array.from({ length: interval.end - interval.start + 1 }).map((val, i) => {
 						return {
@@ -130,11 +165,7 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 			const plot = Plot.plot({
 				height: this.height,
 				width: this.width,
-				y: {
-					grid: true,
-					inset: 6,
-					label: yAxisLabel,
-				},
+				y: yAxis,
 				marks,
 			});
 			this.chart.nativeElement.append(plot);
@@ -153,3 +184,5 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 	}
 
 }
+
+
