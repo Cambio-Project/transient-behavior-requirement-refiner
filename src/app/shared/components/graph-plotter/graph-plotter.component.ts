@@ -33,21 +33,11 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 		return this._properties;
 	}
 	@Input() set properties(properties: string[] | undefined) {
-		if ((!this.properties && properties) || (this.properties && properties && this.properties.length !== properties.length)) {
-			this._properties = properties?.filter(property => property !== null);
-			if (this.properties) {
-				this.selectedProperties = this.properties.map(property => {
-					return {
-						property,
-						selected: true,
-					}
-				})
-			}
-			this.plot();
-		}
+		this._properties = properties?.filter(property => !!property);
+		this.plot();
 	}
 
-	selectedProperties: { property: string, selected: boolean }[] = [];
+	deactivatedProperties = new Set<string>();
 
 	/*
 		COMPARISON VALUE
@@ -92,9 +82,7 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 	plot() {
 		if (!this.chart?.nativeElement) return;
 
-		const properties = this.selectedProperties
-			.filter(selectedProperty => selectedProperty.selected)
-			.map(selectedProperty => selectedProperty.property);
+		const properties = this.properties?.filter(property => !this.deactivatedProperties.has(property));
 
 		while (this.chart.nativeElement.firstChild) this.chart.nativeElement.removeChild(this.chart.nativeElement.firstChild);
 		if (this.dataset && properties && properties.length > 0) {
@@ -176,11 +164,12 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 
 	onSelectedMetricChange(ev: MatCheckboxChange) {
 		const changedProperty = ev.source.value;
-		const selectedProperty = this.selectedProperties.find(selectedProperty => selectedProperty.property === changedProperty);
-		if (selectedProperty) {
-			selectedProperty.selected = ev.checked;
-			this.plot();
+		if (!ev.checked) {
+			this.deactivatedProperties.add(changedProperty);
+		} else {
+			this.deactivatedProperties.delete(changedProperty);
 		}
+		this.plot();
 	}
 
 }
