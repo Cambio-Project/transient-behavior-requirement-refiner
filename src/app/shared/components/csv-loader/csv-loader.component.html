@@ -33,15 +33,38 @@
                 <input [(ngModel)]="dbUrl" matInput type="url" (keyup.enter)="onConnectButtonPressed()"/>
             </mat-form-field>
 
-            <button mat-raised-button color="primary" (click)="onConnectButtonPressed()" style="margin-left: 8px;">
+            <button mat-raised-button color="primary" (click)="onConnectButtonPressed()" style="margin-left: 16px;">
                 Connect
             </button>
+
+            <!-- Checkbox to toggle credential fields -->
+            <div>
+                <mat-checkbox [(ngModel)]="dbUseCredentials">Provide Credentials</mat-checkbox>
+            </div>
+
+            <div [@fadeInOut]="dbUseCredentials ? 'in' : 'out'">
+
+                <!-- Username -->
+                <mat-form-field *ngIf="dbUseCredentials" appearance="fill" style="margin-right: 16px">
+                    <mat-label>Username</mat-label>
+                    <input [(ngModel)]="dbUsername" matInput type="text"/>
+                </mat-form-field>
+
+                <!-- Password -->
+                <mat-form-field *ngIf="dbUseCredentials" appearance="fill">
+                    <mat-label>Password</mat-label>
+                    <input [(ngModel)]="dbPassword" matInput type="password"/>
+                </mat-form-field>
+            </div>
+
         </ng-container>
 
     </div>
 
     <div class="col-12">
         <ng-container *ngIf="sourceType === 'prometheus' && dbConnected">
+
+          <mat-divider style="margin-top: 16px; margin-bottom: 16px"></mat-divider>
 
             <mat-form-field appearance="fill">
                 <mat-label>Choose a metric</mat-label>
@@ -84,9 +107,9 @@
     </div>
 </div>
 
-<mat-card style="padding: 0;">
+<mat-card style="padding: 0">
     <div class="table-container" *ngIf="dataset">
-        <table mat-table [dataSource]="dataset.data" class="mat-elevation-z8" style="width: 100%;">
+        <table mat-table [dataSource]="dataset.data" class="mat-elevation-z8" style="width: 100%">
             <ng-container [matColumnDef]="column" *ngFor="let column of metricDefinitions; let i = index">
                 <th mat-header-cell *matHeaderCellDef> {{ column }} </th>
                 <td mat-cell *matCellDef="let val"> {{ val[column] }} </td>

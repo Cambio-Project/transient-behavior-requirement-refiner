@@ -8,5 +8,19 @@ services:
     ports:
       - 8080:80
 
+  proxy:
+    build:
+      context: ./proxy
+      dockerfile: Dockerfile
+      network: host
+    ports:
+      - 3000:3000
+    networks:
+      - dashboardNetwork
+    depends_on:
+      - dashboard
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
 networks:
   dashboardNetwork:
