@@ -101,6 +101,7 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 					label: properties[0],
 					grid: true,
 					inset: 6,
+					tickSize: '120px',
 				};
 
 				// Secondary Y-Axis
@@ -118,9 +119,10 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 			} else {
 				marks.push(...properties.map(property => Plot.line(this.dataset?.data, { x: 'time', y: property })));
 				yAxis = {
+					label: properties.join(', '),
 					grid: true,
 					inset: 6,
-					label: properties.join(', '),
+					tickSize: '120px',
 				};
 			}
 
