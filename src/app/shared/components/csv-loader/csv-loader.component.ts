@@ -19,6 +19,7 @@ export class CsvLoaderComponent implements OnInit {
 	assetCsvFiles: string[] = [
 		'chaos-exp-1-trace.csv',
 		'chaos-exp-2-trace.csv',
+        'chaos-exp-3-trace.csv',
 	];
 
     dbUrl: string = 'http://localhost:9090';
