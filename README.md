@@ -77,6 +77,39 @@ If you have your own Prometheus instance running, skip the first step.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- Refine Requirement -->
+## Refine Requirement
+After importing data from one of the sources as described under <a href="#import-data">Import Data</a>, go to the step "Select Pattern" and choose a Property Specification Pattern.
+
+### 1. Select Pattern
+1. Select Scope.
+2. Select Category.
+3. Select Pattern.
+
+The selected pattern is the basis for the following specification.
+
+### 2. Enter Specification
+Each Pattern consists of one or more predicates that can be specified as follows:
+1. Expand the specification form by clicking on the "Pen" icon.
+2. Enter an arbitrary name.
+3. Select a Measurement Source (this is the predicate's underlying metric from the imported runtime data).
+4. Select a Logic Operator.
+5. Set a Comparison Value (not applicable for trend operators).
+6. Repeat these steps for all predicates of the selected PSP.
+
+The graph next to each specification form visualizes the time dependant evaluation of the predicate. Green areas mark intervalls, in which the predicate evaluates to true. Red areas indicate its evaluation to false.
+
+### 3. Analyze Specification
+After specifying all predicates, the overall PSP is evaluated. A green box around the specifiaction indicates, that the given specification is satisfied. An unfulfilled requirement is indicated by a red box. The evaluation result is also displayed in the summary graph at the top of this screen.
+
+### 4. Refine Specification
+The specification and its predicates can be refined manually by the user or assissted by the tool.
+
+#### Manual Refinement
+To manually refine a specification, change a predicate's comparison value and/or operator. Potenial evaluation changes of the predicate and the overall pattern are visualized interactively.
+
+#### Assisted Refinement
+To automatically refine a specification, click the "Gear" icon next to the "Pen" icon of the predicate to be refined. The tool analyzes the predicate and suggests comparison values for which the overall pattern evaluates to true and false. Note: the suggestions are based on the selected operator. Change the operator to get suggestions other operators.
 
 ## Showcases
 ### TQPropRefiner with Manual Timebound Refinement
