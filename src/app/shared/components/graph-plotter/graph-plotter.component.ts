@@ -21,6 +21,9 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 		return this._dataset;
 	}
 	@Input() set dataset(dataset: Dataset | undefined) {
+		if (this._dataset !== dataset) {
+			this.deactivatedProperties.clear();
+		}
 		this._dataset = dataset;
 		this.plot();
 	}
@@ -101,7 +104,6 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 					label: properties[0],
 					grid: true,
 					inset: 6,
-					tickSize: '120px',
 				};
 
 				// Secondary Y-Axis
@@ -122,7 +124,6 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 					label: properties.join(', '),
 					grid: true,
 					inset: 6,
-					tickSize: '120px',
 				};
 			}
 
@@ -134,12 +135,12 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 			// VALIDATION RESPONSE
 			if (this.validationResponse) {
 				let height = 0;
-				if(properties.length === 2)	{
+				if (properties.length === 2) {
 					height = this.dataset?.metricMax(properties[0]);
-				}	else {
+				} else {
 					height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0)) * 1.5;
 				}
-				
+
 				this.validationResponse.intervals.forEach(interval => {
 					const arr = Array.from({ length: interval.end - interval.start + 1 }).map((val, i) => {
 						return {
