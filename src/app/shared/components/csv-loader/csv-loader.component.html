@@ -6,7 +6,7 @@
         <!-- Upload selection -->
         <mat-form-field appearance="fill" style="margin-right: 16px; width: 200px">
             <mat-label>File Source</mat-label>
-            <mat-select [(ngModel)]="sourceType" value="upload">
+            <mat-select [(ngModel)]="sourceType" (selectionChange)="onSourceTypeChange()" value="upload">
                 <mat-option value="demo">Demo</mat-option>
                 <mat-option value="upload">Upload</mat-option>
                 <mat-option value="prometheus">Prometheus</mat-option>

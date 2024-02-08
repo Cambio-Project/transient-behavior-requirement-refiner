@@ -54,6 +54,10 @@ export class CsvLoaderComponent implements OnInit {
 	ngOnInit(): void {
 	}
 
+    onSourceTypeChange() {
+        this.dataset = null;
+    }
+
 	onFileSelected(ev: any) {
 		const file = ev.srcElement.files[0];
 		this.loadCsvFileLocal(file);

@@ -21,6 +21,9 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 		return this._dataset;
 	}
 	@Input() set dataset(dataset: Dataset | undefined) {
+		if (this._dataset !== dataset) {
+			this.deactivatedProperties.clear();
+		}
 		this._dataset = dataset;
 		this.plot();
 	}
@@ -101,7 +104,6 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 					label: properties[0],
 					grid: true,
 					inset: 6,
-					tickSize: '120px',
 				};
 
 				// Secondary Y-Axis
@@ -122,7 +124,6 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 					label: properties.join(', '),
 					grid: true,
 					inset: 6,
-					tickSize: '120px',
 				};
 			}
 

@@ -18,6 +18,7 @@ export class RequirementOptimizerComponent implements OnInit {
 
 	onDatasetChange(dataset: Dataset) {
 		this.dataset = dataset;
+		this.property = null;
 	}
 
 	onPropertyChange(property: Property) {

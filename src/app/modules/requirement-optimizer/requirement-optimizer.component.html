@@ -2,32 +2,26 @@
 	<span>Requirement Refinement</span>
 </mat-toolbar>
 <mat-stepper [linear]="true" #stepper>
-	<mat-step>
+	<mat-step [editable]="!!dataset" [completed]="!!dataset">
 		<ng-template matStepLabel>Load Trace</ng-template>
 		<app-csv-loader (datasetChange)="onDatasetChange($event)"></app-csv-loader>
 		<div class="footer">
 			<button [disabled]="!dataset" mat-flat-button color="primary" matStepperNext>Next</button>
 		</div>
-		<!-- 
-		<div>
-			<button [disabled]="!dataset" mat-flat-button color="primary" matStepperNext>Next</button>
-		</div>
-		 -->
 	</mat-step>
-	<mat-step>
+	<mat-step [editable]="!!property" [completed]="!!property">
 		<ng-template matStepLabel>Select Pattern</ng-template>
-		<app-pattern-selector (propertyChange)="onPropertyChange($event)"></app-pattern-selector>
+		<app-pattern-selector [(property)]="property"></app-pattern-selector>
 		<div class="footer">
 			<button mat-button matStepperPrevious>Back</button>
 			<button [disabled]="!property" mat-flat-button color="primary" matStepperNext>Next</button>
 		</div>
 	</mat-step>
-	<mat-step>
+	<mat-step #propertyEditStep [editable]="false" [completed]="!!dataset && !!property && propertyEditStep.interacted">
 		<ng-template matStepLabel>Specification</ng-template>
 		<app-property-edit [dataset]="dataset" [property]="property"></app-property-edit>
 		<div class="footer">
 			<button mat-button matStepperPrevious>Back</button>
-			<!-- <button mat-button (click)="stepper.reset()">Reset</button> -->
 		</div>
 	</mat-step>
 </mat-stepper>
