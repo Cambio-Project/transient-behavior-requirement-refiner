@@ -1,7 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { pairwise } from 'rxjs';
-import { Dataset } from 'src/app/shared/models/dataset';
 import { Interval } from 'src/app/shared/psp/constraints/interval';
 import { PSPConstants } from 'src/app/shared/psp/engine/pspconstants';
 import { Event } from 'src/app/shared/psp/sel/event';
@@ -20,6 +19,18 @@ import { Scope } from 'src/app/shared/psp/sel/scopes/scope';
 })
 export class PatternSelectorComponent implements OnInit {
 
+	private _property?: Property | null;
+	@Input() set property(property: Property | undefined | null) {
+		if (!property) {
+			this.patternSelectForm.reset();
+		}
+		this._property = property;
+	}
+
+	get property() {
+		return this._property;
+	}
+
 	@Output() propertyChange = new EventEmitter<Property>();
 
 	SCOPE_OPTIONS = SCOPE_OPTIONS;
@@ -30,8 +41,6 @@ export class PatternSelectorComponent implements OnInit {
 	patternSelectForm = new FormGroup({
 		scope: new FormControl(),
 		category: new FormControl(),
-		//scope: new FormControl(new Globally()),
-		//category: new FormControl({ name: 'Response', type: PSPConstants.P_Response }),
 		pattern: new FormControl(),
 	});
 
