@@ -116,7 +116,7 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 					Plot.lineY(this.dataset?.data, { x: "time", y: property0 }),
 					Plot.lineY(this.dataset?.data, Plot.mapY((D: any) => D.map(secondaryYAxis), { x: "time", y: property1, stroke: secondaryYAxisColor }))
 				);
-			} else {
+			} else {				
 				marks.push(...properties.map(property => Plot.line(this.dataset?.data, { x: 'time', y: property })));
 				yAxis = {
 					label: properties.join(', '),
@@ -139,10 +139,10 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 				} else {
 					height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0)) * 1.5;
 				}
-				this.validationResponse.intervals.forEach(interval => {
-					const arr = Array.from({ length: interval.end - interval.start + 1 }).map((val, i) => {
+				this.validationResponse.intervals.forEach((interval, intervalIndex) => {
+					const arr = Array.from({ length: interval.end - interval.start + (intervalIndex > 0 ? 1 : 0) + (this.validationResponse?.intervals && intervalIndex === this.validationResponse?.intervals?.length - 1 ? 1 : 0 )}).map((val, i) => {
 						return {
-							time: i + interval.start + 1,
+							time: i + interval.start + (intervalIndex > 0 ? - 1 : 0),
 							height: height,
 						}
 					});
