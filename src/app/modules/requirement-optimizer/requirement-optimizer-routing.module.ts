@@ -12,6 +12,10 @@ const routes: Routes = [
 		path: 'home',
 		component: RequirementOptimizerComponent,
 	},
+    {
+        path: 'shortcut',
+        component: RequirementOptimizerComponent,
+    },
 ];
 
 @NgModule({
