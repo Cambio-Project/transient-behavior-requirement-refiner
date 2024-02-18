@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RequirementOptimizerComponent } from './requirement-optimizer.component';
+import {PropertyEditComponent} from "./components/property-edit/property-edit.component";
 
 const routes: Routes = [
 	{
@@ -14,7 +15,7 @@ const routes: Routes = [
 	},
     {
         path: 'shortcut',
-        component: RequirementOptimizerComponent,
+        component: PropertyEditComponent,
     },
 ];
 

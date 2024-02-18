@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import { ValidationService } from 'src/app/core/services/validation.service';
 import { ValidationResponse } from 'src/app/shared/models/validation-response';
 import { Interval } from 'src/app/shared/psp/constraints/interval';
@@ -10,13 +10,17 @@ import { Response } from 'src/app/shared/psp/sel/patterns/order/response';
 import { Dataset } from '../../../../shared/models/dataset';
 import { PSPConstants } from '../../../../shared/psp/engine/pspconstants';
 import { Property } from '../../../../shared/psp/sel/property';
+import {Absence} from "../../../../shared/psp/sel/patterns/occurence/absence";
+import {AfterQ} from "../../../../shared/psp/sel/scopes/after-q";
+import {DataService} from "../../../../core/services/data.service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
 	selector: 'app-property-edit',
 	templateUrl: './property-edit.component.html',
 	styleUrls: ['./property-edit.component.scss']
 })
-export class PropertyEditComponent implements OnInit {
+export class PropertyEditComponent implements OnInit, AfterViewInit {
 
 	@Input() dataset: Dataset | null = null;
 	@Input() property: Property | null = null;
@@ -26,8 +30,8 @@ export class PropertyEditComponent implements OnInit {
 	PSPConstants = PSPConstants;
 
 	constructor(
-		private validationSvc: ValidationService,
-	) { }
+        private validationSvc: ValidationService, private dataSvc: DataService, private route: ActivatedRoute
+    ) {}
 
 	ngOnInit(): void { }
 
@@ -46,5 +50,37 @@ export class PropertyEditComponent implements OnInit {
 			});
 		}
 	}
+
+    async ngAfterViewInit(): Promise<void> {
+        await this.skipToSpecification()
+    }
+
+    async skipToSpecification() {
+        try {
+            this.route.queryParams.subscribe(async params => {
+                this.dataset = await this.dataSvc.parseCsvFileFromAssets(params["file"]) //TODO Change with request content
+                if (params["pattern"] === "Absence"){
+                    this.property = this.getAbsencePSP()
+
+                }
+            })
+        } catch (e) {
+            console.log(e)
+        }
+
+    }
+
+    //TODO Remove this, just for temp
+    getAbsencePSP() {
+        const evQ = new Event('Q');
+        const ev1 = new Event('Event1');
+        const pattern = new Absence();
+        pattern.setP(ev1);
+        const property = new Property('AbsencePSP');
+        property.setPattern(pattern);
+        const scope = new AfterQ(evQ);
+        property.setScope(scope);
+        return property;
+    }
 
 }

@@ -13,21 +13,15 @@ import {AfterQ} from "../../shared/psp/sel/scopes/after-q";
 	templateUrl: './requirement-optimizer.component.html',
 	styleUrls: ['./requirement-optimizer.component.scss']
 })
-export class RequirementOptimizerComponent implements OnInit, AfterViewInit{
+export class RequirementOptimizerComponent implements OnInit{
 
     @ViewChild("stepper") stepper: MatStepper | undefined;
 
 	dataset: Dataset | null = null;
 	property: Property | null = null;
 
-	constructor(private changeDetectorRef: ChangeDetectorRef, private router: Router, private dataSvc: DataService) {
-        this.router = router;
-    }
+	constructor() {
 
-    async ngAfterViewInit(): Promise<void> {
-        if (this.router.url.includes("shortcut")) {
-            await this.skipToSpecification();
-        }
     }
 
 	ngOnInit(): void { }
@@ -40,25 +34,4 @@ export class RequirementOptimizerComponent implements OnInit, AfterViewInit{
 	onPropertyChange(property: Property) {
 		this.property = property;
 	}
-
-    async skipToSpecification() {
-        this.dataset = await this.dataSvc.parseCsvFileFromAssets("chaos-exp-1-trace.csv") //TODO Change with request content
-        this.property = this.getAbsencePSP()
-        this.changeDetectorRef.detectChanges()
-        this.stepper!!.next()
-        this.stepper!!.next()
-    }
-
-    //TODO Remove this, just for temp
-    getAbsencePSP() {
-        const evQ = new Event('Q');
-        const ev1 = new Event('Event1');
-        const pattern = new Absence();
-        pattern.setP(ev1);
-        const property = new Property('AbsencePSP');
-        property.setPattern(pattern);
-        const scope = new AfterQ(evQ);
-        property.setScope(scope);
-        return property;
-    }
 }
