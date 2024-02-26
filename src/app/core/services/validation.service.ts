@@ -12,8 +12,8 @@ import { Absence } from 'src/app/shared/psp/sel/patterns/occurence/absence';
 import { Universality } from 'src/app/shared/psp/sel/patterns/occurence/universality';
 import { TimeBound } from 'src/app/shared/psp/constraints/time-bound';
 
-//const VERIFIER_URL = "http://localhost:5000/monitor";
-const VERIFIER_URL = "https://transient-behavior-verifier-abngcvp24a-uc.a.run.app/monitor";
+// const VERIFIER_URL = "http://localhost:5000";
+const VERIFIER_URL = "https://transient-behavior-verifier-abngcvp24a-uc.a.run.app";
 
 @Injectable({
 	providedIn: 'root'
@@ -37,7 +37,7 @@ export class ValidationService {
 			"measurement_source": "csv",
 			"measurement_points": dataset.measurementPoints
 		});
-		return this.sendRequest(request, predicate, dataset.file);
+		return this.sendRequest("monitor", request, predicate, dataset.file);
 	}
 
 	async validateProperty(dataset: Dataset, property: Property) {
@@ -55,10 +55,35 @@ export class ValidationService {
 			"measurement_source": "csv",
 			"measurement_points": dataset.measurementPoints
 		});
-		return this.sendRequest(request, property, dataset.file).then(validationResponse => {
+		return this.sendRequest("monitor", request, property, dataset.file).then(validationResponse => {
 			return validationResponse;
 		});
 	}
+
+    async refineTimeboundRemote(dataset: Dataset, property: Property): Promise<TimeBound | null> {
+
+        if (!property.propertySpecification || !property.predicateInfos) {
+			throw new Error('Invalid Property');
+		}
+
+		const request = JSON.stringify({
+			"behavior_description": "description",
+			"specification": property.propertySpecification,
+			"specification_type": "psp",
+			"predicates_info": property.predicateInfos,
+			"measurement_source": "csv",
+			"measurement_points": dataset.measurementPoints
+		});
+
+        return this.sendRequest("refine_timebound", request, property, dataset.file)
+            .then(refinementResponse => {
+                if(refinementResponse.result === true) {
+			        return refinementResponse.timebound;
+                }
+                return null;
+		    });
+
+    }
 
 	async refineTimebound(dataset: Dataset, property: Property): Promise<TimeBound | null> {
 		const pattern = property.getPattern();
@@ -76,7 +101,10 @@ export class ValidationService {
 			while (lowerTimebound <= end && upperTimebound <= end) {
 				const propertyCandidate = Object.assign(Object.create(Object.getPrototypeOf(property)), property);
 				const patternCandidate = Object.assign(Object.create(Object.getPrototypeOf(pattern)), pattern);
-				const evaluatedTimebound = new Interval(new Event('Candidate' + lowerTimebound + ' to ' + upperTimebound), lowerTimebound, upperTimebound, 'time units');
+				const evaluatedTimebound = new Interval(
+                    new Event('Candidate' + lowerTimebound + ' to ' + upperTimebound),
+                    lowerTimebound, upperTimebound, 'time units'
+                );
 				patternCandidate.setSTimeBound(evaluatedTimebound);
 				propertyCandidate.setPattern(patternCandidate);
 				const validationResponse = await this.validateProperty(dataset, propertyCandidate);
@@ -87,7 +115,9 @@ export class ValidationService {
 						lowerTimebound++;
 					} else if (refinedInterval) {
 						refinedlowerTimebound = lowerTimebound = upperTimebound = refinedInterval.getLowerLimit();
-					}
+					} else {
+						lowerTimebound++;
+                    }
 				} else if (refinedUpperTimebound === -1) {
 					if (validationResponse.result === true) {
 						refinedUpperTimebound = upperTimebound;
@@ -157,8 +187,7 @@ export class ValidationService {
 		return Promise.all(promises);
 	}
 
-	private sendRequest(request: string, validatedItem: Property | Event, file: File): Promise<ValidationResponse> {
-		console.log(request);
+	private sendRequest(endpoint: string, request: string, validatedItem: Property | Event, file: File): Promise<ValidationResponse> {
 		return new Promise((resolve, reject) => {
 			var formdata = new FormData();
 			formdata.append("formula_json", request);
@@ -170,7 +199,8 @@ export class ValidationService {
 				redirect: 'follow'
 			};
 
-			fetch(VERIFIER_URL, requestOptions)
+            let url = VERIFIER_URL + "/" + endpoint;
+			fetch(url, requestOptions)
 				.then(response => response.text())
 				.then(result => {
 					const response = JSON.parse(result);
