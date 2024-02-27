@@ -75,6 +75,31 @@ If you have your own Prometheus instance running, skip the first step.
 2. Choose metrics from the selection list OR activate "Custom Query" and enter your own PromQL query.
 3. Press "Query".
 
+### Performance Considerations
+The following table shows the time for validating and time refinement with no solution (worst case).
+Validation scales well up to 50000 samples, time refinement up to 10000 samples. 
+
+| samples	 | validation	                                           | time-refinement |
+|----------|-------------------------------------------------------|-----------------|
+| 10	      | <0.1s		                                               | ~0.1s           |
+| 100	     | <0.1s		                                               | ~0.4s           |
+| 1000	    | <0.1s                                                 | ~34s            |
+| 10000	   | ~0.6s		                                               | ~3100s (51 min) |
+| 50000    | ~3s		                                                 | --              |
+| 100000	  | --------------- out of memory ----------------------- | --              |
+
+To give perspective, for validation-only, reasonable intervals for different sampling rates are:
+- 50 seconds interval with a 1 millisecond sampling rate. (50000 samples)
+- 1 hour interval with a 75 millisecond sampling rate. (46800 samples)
+- 1 day of with a 2 seconds sampling rate. (43200 samples)
+- 1 week interval with a 10 seconds sampling rate. (60480 samples)
+
+and for time-refinement, reasonable intervals for different sampling rates are:
+- 1 second with a 1 millisecond sampling rate. (1000 samples)
+- 1 minute with a 75 millisecond sampling rate. (800 samples)
+- 1 hour with a 5 seconds sampling rate. (720 samples)
+- 1 day with a 1 minute sampling rate. (1440 samples)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Refine Requirement -->
