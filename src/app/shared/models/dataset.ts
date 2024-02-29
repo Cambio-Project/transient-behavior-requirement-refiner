@@ -8,7 +8,7 @@ export class Dataset {
 			this.metricDefinitions = dataset[0];
 			this.data = dataset.splice(1, dataset.length).map((el: any, i: number) => {
 				const obj: any = {};
-				obj.time = i + 1;
+				obj.time = i;
 				for (let i = 0; i < this.metricDefinitions.length; i++) {
 					let val = el[i];
 					if (!Number.isNaN(val)) {
@@ -18,7 +18,6 @@ export class Dataset {
 				}
 				return obj;
 			});
-			//this.metricDefinitions = ['time', ...this.metricDefinitions];
 		} else {
 			throw new Error('Invalid Dataset');
 		}
