@@ -15,6 +15,7 @@ if (process.argv.indexOf('-h') > -1 || process.argv.indexOf('--help') > -1) {
   showHelp();
 }
 const isDocker = process.argv.indexOf('--docker') > -1;
+const isPodman = process.argv.indexOf('--podman') > -1;
 
 // Configure axios to automatically decompress the response
 axios.defaults.decompress = true;
@@ -61,7 +62,9 @@ app.all('/proxy', async (req, res) => {
     // Extracting target URL and basic auth credentials from headers
     let targetUrl;
     if (isDocker) {
-      targetUrl = req.headers['x-target-url'].replace('localhost', 'host.docker.internal');
+        targetUrl = req.headers['x-target-url'].replace('localhost', 'host.docker.internal');
+    } else if (isPodman) {
+        targetUrl = req.headers['x-target-url'].replace('localhost', 'host.container.internal');
     }
     else {
       targetUrl = req.headers['x-target-url'];
@@ -100,5 +103,13 @@ app.all('/proxy', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Proxy server running at http://localhost:${port} (docker mode: ${isDocker})`);
+    let mode = '';
+    if (isDocker) {
+        mode = 'docker';
+    } else if (isPodman) {
+        mode = 'podman';
+    } else {
+        mode = 'host';
+    }
+    console.log(`Proxy server running at http://localhost:${port} (mode: ${mode})`);
 });
