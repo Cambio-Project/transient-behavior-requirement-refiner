@@ -62,7 +62,7 @@ export class PropertyEditComponent implements OnInit, AfterViewInit {
                 let filename = params["file"]
                 let sim_id = params["sim_id"]
 
-                if (!(sim_id ^ filename)) {
+                if (!!filename == !!sim_id) {
                     throw new Error("Either provide sim_id or file name, not both or none.")
                 }
                 if (sim_id) {
