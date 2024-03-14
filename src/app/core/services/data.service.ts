@@ -33,11 +33,11 @@ export class DataService {
         });
     }
 
-    parseCsvFileFromAssets(fileName: string) {
+    parseCsvFileFromAddress(address: string, filename: string) {
         return new Promise<Dataset>((resolve, reject) => {
-            this.http.get(`assets/csv/${fileName}`, {responseType: 'arraybuffer'})
+            this.http.get(`${address}/${filename}`, {responseType: 'arraybuffer'})
                 .subscribe(async data => {
-                    const file = this.blobToFile(data, fileName);
+                    const file = this.blobToFile(data, filename);
                     try {
                         const dataset = await this.parseCsvFile(file);
                         resolve(dataset);
