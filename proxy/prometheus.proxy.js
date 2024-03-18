@@ -3,7 +3,7 @@ const axios = require('axios');
 const cors = require('cors');
 const stream = require("stream");
 const app = express();
-const port = 3000;
+const port = 8070;
 
 // handle arguments
 const showHelp = () => {

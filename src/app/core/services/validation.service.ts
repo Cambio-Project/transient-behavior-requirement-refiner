@@ -12,8 +12,8 @@ import { Absence } from 'src/app/shared/psp/sel/patterns/occurence/absence';
 import { Universality } from 'src/app/shared/psp/sel/patterns/occurence/universality';
 import { TimeBound } from 'src/app/shared/psp/constraints/time-bound';
 
-// const VERIFIER_URL = "http://localhost:5000";
-const VERIFIER_URL = "https://transient-behavior-verifier-abngcvp24a-uc.a.run.app";
+// const VERIFIER_URL = "http://localhost:5000";  // local
+const VERIFIER_URL = "http://localhost:8083";  // docker
 
 @Injectable({
 	providedIn: 'root'
@@ -35,7 +35,10 @@ export class ValidationService {
 				predicate.predicateInfo
 			],
 			"measurement_source": "csv",
-			"measurement_points": dataset.measurementPoints
+			"measurement_points": dataset.measurementPoints,
+            "options": {
+                "create_plots": false
+            }
 		});
 		return this.sendRequest("monitor", request, predicate, dataset.file);
 	}
@@ -53,7 +56,10 @@ export class ValidationService {
 			"specification_type": "psp",
 			"predicates_info": property.predicateInfos,
 			"measurement_source": "csv",
-			"measurement_points": dataset.measurementPoints
+			"measurement_points": dataset.measurementPoints,
+            "options": {
+                "create_plots": false
+            }
 		});
 		return this.sendRequest("monitor", request, property, dataset.file).then(validationResponse => {
 			return validationResponse;
@@ -72,7 +78,7 @@ export class ValidationService {
 			"specification_type": "psp",
 			"predicates_info": property.predicateInfos,
 			"measurement_source": "csv",
-			"measurement_points": dataset.measurementPoints
+			"measurement_points": dataset.measurementPoints,
 		});
 
         return this.sendRequest("refine_timebound", request, property, dataset.file)
