@@ -42,7 +42,7 @@ export class TimeboundConstraintRefinementComponent implements OnInit {
 
 	async refineTimeboundConstraint() {
 		this.isLoading = true;
-		this.refinedTimebound = await this.validationSvc.refineTimebound(this.dataset, this.property);
+		this.refinedTimebound = await this.validationSvc.refineTimeboundRemote(this.dataset, this.property);
 		this.isLoading = false;
 		this.plot(this.refinedTimebound);
 	}

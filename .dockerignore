@@ -1,7 +1,13 @@
+.angular
+.idea
+.vscode
+dist
+
 .git
 .editorconfig
 /.vscode/*
 /node_modules
+/proxy/node_modules
 /e2e
 /docs
 .gitignore
