@@ -182,8 +182,7 @@ export class ValidationService {
             request,
             dataset,
             event.getName(),
-            event.getMeasurementSource()!,
-            false
+            event.getMeasurementSource()!
         )
     }
 
@@ -230,8 +229,7 @@ export class ValidationService {
         request: string,
         dataset: Dataset,
         predicateName: string,
-        measurementName: string,
-        useFormula: boolean = true
+        measurementName: string
     ): Promise<PredicateRefinementResponse> {
         return new Promise((resolve, reject) => {
             var formdata = new FormData();
@@ -245,13 +243,14 @@ export class ValidationService {
             };
 
             let url = VERIFIER_URL + "/refine_predicate";
-            url += `?predicate=${predicateName}&metric=${measurementName}&use_formula=${useFormula}`;
+            url += `?predicate=${predicateName}&metric=${measurementName}`;
 
             fetch(url, requestOptions)
                 .then(response => response.text())
                 .then(result => {
                     const response = JSON.parse(result);
                     const refinementResponse = new PredicateRefinementResponse(response);
+                    console.log(refinementResponse);
                     resolve(refinementResponse);
                 })
                 .catch(error => {

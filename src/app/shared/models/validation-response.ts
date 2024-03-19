@@ -3,6 +3,7 @@ import {Property} from "../psp/sel/property";
 import {TimeBound} from "../psp/constraints/time-bound";
 import {UpperTimeBound} from "../psp/constraints/upper-time-bound";
 import {Interval} from "../psp/constraints/interval";
+import {interval} from "rxjs";
 
 export class ValidationResponse {
 
@@ -35,9 +36,16 @@ export class ValidationResponse {
 }
 
 export class PredicateRefinementResponse {
+    interval: { start: number, end: number, step: number };
     result: string[];
 
     constructor(response: any) {
+        // map interval from tupe to object
+        this.interval = {
+            start: response.interval[0],
+            end: response.interval[1],
+            step: response.interval[2],
+        }
         this.result = response.result;
     }
 }

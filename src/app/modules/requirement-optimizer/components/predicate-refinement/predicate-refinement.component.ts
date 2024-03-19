@@ -5,6 +5,7 @@ import { LogicOperator } from 'src/app/shared/enums/logic-operator';
 import { Dataset } from 'src/app/shared/models/dataset';
 import { PredicateRefinementResponse } from 'src/app/shared/models/validation-response';
 import { Property } from 'src/app/shared/psp/sel/property';
+import {interval} from "rxjs";
 
 @Component({
 	selector: 'app-predicate-refinement',
@@ -49,5 +50,13 @@ export class PredicateRefinementComponent implements OnInit {
 	onConfirm(comparisonValue: number) {
 		this.dialogRef.close(comparisonValue);
 	}
+
+    protected readonly interval = interval;
+    protected readonly parseFloat = parseFloat;
+
+    getFormattedValue(i: number): string {
+        const value = this.refinementResponse!.interval.start + i * this.refinementResponse!.interval.step;
+        return Number.isInteger(value) ? value.toString() : value.toFixed(5).replace(',', '.');
+    }
 
 }
