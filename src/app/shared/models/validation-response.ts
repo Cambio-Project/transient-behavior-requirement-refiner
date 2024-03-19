@@ -1,25 +1,24 @@
-import { Event } from "../psp/sel/event";
-import { Property } from "../psp/sel/property";
+import {Event} from "../psp/sel/event";
+import {Property} from "../psp/sel/property";
 import {TimeBound} from "../psp/constraints/time-bound";
 import {UpperTimeBound} from "../psp/constraints/upper-time-bound";
 import {Interval} from "../psp/constraints/interval";
 
 export class ValidationResponse {
 
-	result: boolean;
-	intervals: { start: number, end: number, result: boolean }[];
+    result: boolean;
+    intervals: { start: number, end: number, result: boolean }[];
     timebound: TimeBound | null;
 
-	constructor(response: any, public validatedItem: Property | Event) {
-        console.log(response)
-		this.result = (new String(response.result)).toLowerCase() === 'true';
-		this.intervals = response.intervals.map((interval: any[]) => {
-			return {
-				start: interval[0],
-				end: interval[1],
-				result: interval[2],
-			}
-		});
+    constructor(response: any, public validatedItem: Property | Event) {
+        this.result = (new String(response.result)).toLowerCase() === 'true';
+        this.intervals = response.intervals.map((interval: any[]) => {
+            return {
+                start: interval[0],
+                end: interval[1],
+                result: interval[2],
+            }
+        });
 
         this.timebound = this.determineTimeBound(response);
     }
@@ -32,5 +31,13 @@ export class ValidationResponse {
             return new UpperTimeBound(new Event(`Candidate ${upper_bound}`), upper_bound, 'time units');
         }
         return null;
+    }
+}
+
+export class PredicateRefinementResponse {
+    result: string[];
+
+    constructor(response: any) {
+        this.result = response.result;
     }
 }
