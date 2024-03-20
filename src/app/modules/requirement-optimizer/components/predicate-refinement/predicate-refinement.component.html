@@ -1,17 +1,21 @@
 <h2 mat-dialog-title>Predicate Refinement ({{ predicateLogicOperator }})</h2>
 <mat-dialog-content class="mat-typography">
-	<!-- <h3>Develop across all platforms</h3>
-	<p>Learn one way to build applications with Angular and reuse your code and abilities to build
-		apps for any deployment target. For web, mobile web, native mobile and native desktop.</p> -->
-	<mat-spinner *ngIf="isLoading" style="margin: 0 auto;"></mat-spinner>
-	<!-- <div #chart></div> -->
-	<ng-container *ngFor="let validationResponse of validationResponses; let i = index;">
-		<div style="margin-bottom: 8px; margin-right: 8px; display: inline-block;">
-			<button mat-flat-button (click)="onConfirm(i)" color="primary" [ngStyle]="validationResponse.result ? {'background-color': 'green'} : {'background-color': 'red'}">{{ i }}</button>
-		</div>
-	</ng-container>
+    <mat-spinner *ngIf="isLoading" style="margin: 0 auto;"></mat-spinner>
+    <ng-container *ngIf="refinementResponse?.result">
+        <ng-container *ngFor="let result of refinementResponse!.result; let i = index;">
+            <div style="margin-bottom: 8px; margin-right: 8px; display: inline-block;">
+                <button
+                    mat-flat-button
+                    (click)="onConfirm(parseFloat(getFormattedValue(i)))"
+                    color="primary"
+                    [ngStyle]="result ? {'background-color': 'green'} : {'background-color': 'red'}"
+                >
+                    {{ getFormattedValue(i) }}
+                </button>
+            </div>
+        </ng-container>
+    </ng-container>
 </mat-dialog-content>
 <mat-dialog-actions align="end" *ngIf="!isLoading">
-	<button mat-button mat-dialog-close>Cancel</button>
-	<!-- <button mat-flat-button color="primary" (click)="onConfirm()" cdkFocusInitial>Confirm Refinement</button> -->
+    <button mat-button mat-dialog-close>Cancel</button>
 </mat-dialog-actions>

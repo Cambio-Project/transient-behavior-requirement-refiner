@@ -150,7 +150,7 @@ export class CsvLoaderComponent implements OnInit {
 	}
 
 	async loadCsvFileFromAssets(fileName: string) {
-		const dataset = await this.dataSvc.parseCsvFileFromAssets(fileName);
+		const dataset = await this.dataSvc.parseCsvFileFromAddress('assets/csv', fileName);
 		this.setDataset(dataset);
 	}
 

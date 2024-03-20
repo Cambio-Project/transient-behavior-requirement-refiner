@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ValidationResponse } from '../../shared/models/validation-response';
+import { ValidationResponse, PredicateRefinementResponse } from '../../shared/models/validation-response';
 import { Event } from '../../shared/psp/sel/event';
 import { Dataset } from 'src/app/shared/models/dataset';
 import { Property } from 'src/app/shared/psp/sel/property';
@@ -217,6 +217,38 @@ export class ValidationService {
 		return null;
 	}
 
+	async refinePredicateRemote(dataset: Dataset, predicateName: string, property: Property): Promise<PredicateRefinementResponse> {
+		if (!property.propertySpecification || !property.predicateInfos) {
+			throw new Error('Invalid Property');
+		}
+		const pattern = property.getPattern();
+		if (!pattern) {
+			throw new Error('Invalid Pattern');
+		}
+		const event = pattern!.getEvents().find(event => event.getSpecification() === predicateName);
+		if (!event) {
+			throw new Error('Invalid Event');
+		}
+
+		console.log(event)
+
+		const request = JSON.stringify({
+			"behavior_description": "description",
+			"specification": property.propertySpecification,
+			"specification_type": "psp",
+			"predicates_info": property.predicateInfos,
+			"measurement_source": "csv",
+			"measurement_points": dataset.measurementPoints,
+		});
+
+		return this.sendPredicateRefinementRequest(
+			request,
+			dataset,
+			event.getName(),
+			event.getMeasurementSource()!
+		)
+	}
+
 	async refinePredicate(dataset: Dataset, predicateName: string, logicOperator: LogicOperator, property: Property) {
 		if (!requiresComparisonValue(logicOperator)) {
 			throw new Error('No refinement available for logic operators that do not require a comparison value');
@@ -256,7 +288,47 @@ export class ValidationService {
 		return Promise.all(promises);
 	}
 
-	private sendRequest(endpoint: string, request: string, validatedItem: Property | Event, file: File): Promise<ValidationResponse> {
+	private sendPredicateRefinementRequest(
+		request: string,
+		dataset: Dataset,
+		predicateName: string,
+		measurementName: string
+	): Promise<PredicateRefinementResponse> {
+		return new Promise((resolve, reject) => {
+			var formdata = new FormData();
+			formdata.append("formula_json", request);
+			formdata.append("file", dataset.file, dataset.file.name);
+
+			var requestOptions: RequestInit = {
+				method: 'POST',
+				body: formdata,
+				redirect: 'follow'
+			};
+
+			let url = VERIFIER_URL + "/refine_predicate";
+			url += `?predicate=${predicateName}&metric=${measurementName}`;
+
+			fetch(url, requestOptions)
+				.then(response => response.text())
+				.then(result => {
+					const response = JSON.parse(result);
+					const refinementResponse = new PredicateRefinementResponse(response);
+					console.log(refinementResponse);
+					resolve(refinementResponse);
+				})
+				.catch(error => {
+					console.log('error', error);
+					reject(error);
+				});
+		});
+	}
+
+	private sendRequest(
+		endpoint: string,
+		request: string,
+		validatedItem: Property | Event,
+		file: File,
+	): Promise<ValidationResponse> {
 		return new Promise((resolve, reject) => {
 			var formdata = new FormData();
 			formdata.append("formula_json", request);
@@ -269,13 +341,15 @@ export class ValidationService {
 			};
 
 			let url = VERIFIER_URL + "/" + endpoint;
+
 			fetch(url, requestOptions)
 				.then(response => response.text())
 				.then(result => {
 					const response = JSON.parse(result);
-					const validationRespone = new ValidationResponse(response, validatedItem);
-					console.log(validationRespone);
-					resolve(validationRespone);
+					const validationResponse = new ValidationResponse(response, validatedItem);
+					console.log(validationResponse);
+					resolve(validationResponse);
+
 				})
 				.catch(error => {
 					console.log('error', error);

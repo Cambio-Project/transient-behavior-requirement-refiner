@@ -58,10 +58,21 @@ export class PropertyEditComponent implements OnInit, AfterViewInit {
     async skipToSpecification() {
         try {
             this.route.queryParams.subscribe(async params => {
-                this.dataset = await this.dataSvc.parseCsvFileFromAssets(params["file"]) //TODO Change with request content
+                let address = params["file-address"] || "assets/csv"
+                let filename = params["file"]
+                let sim_id = params["sim_id"]
+
+                if (!!filename == !!sim_id) {
+                    throw new Error("Either provide sim_id or file name, not both or none.")
+                }
+                if (sim_id) {
+                    address = `${address}/${sim_id}`
+                    filename = "_combined.csv"
+                }
+                this.dataset = await this.dataSvc.parseCsvFileFromAddress(address, filename)
+
                 if (params["pattern"] === "Absence"){
                     this.property = this.getAbsencePSP()
-
                 }
             })
         } catch (e) {
