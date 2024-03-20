@@ -15,6 +15,8 @@ import { RequirementOptimizerComponent } from './requirement-optimizer.component
 import { PredicateRefinementComponent } from './components/predicate-refinement/predicate-refinement.component';
 import { PatternOccurrenceAbsenceComponent } from './components/property-edit/components/pattern-occurrence-absence/pattern-occurrence-absence.component';
 import { PatternOccurrenceUniversalityComponent } from './components/property-edit/components/pattern-occurrence-universality/pattern-occurrence-universality.component';
+import { PropertyEditDynamicComponent } from './components/property-edit-dynamic/property-edit-dynamic.component';
+import { PredicateEditDynamicComponent } from './components/predicate-edit-dynamic/predicate-edit-dynamic.component';
 
 
 @NgModule({
@@ -30,6 +32,8 @@ import { PatternOccurrenceUniversalityComponent } from './components/property-ed
 		PredicateRefinementComponent,
 		PatternOccurrenceAbsenceComponent,
 		PatternOccurrenceUniversalityComponent,
+		PropertyEditDynamicComponent,
+		PredicateEditDynamicComponent,
 	],
 	imports: [
 		CommonModule,

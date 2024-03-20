@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { RequirementOptimizerComponent } from './requirement-optimizer.component';
-import {PropertyEditComponent} from "./components/property-edit/property-edit.component";
+import { PropertyEditComponent } from "./components/property-edit/property-edit.component";
+import { PropertyEditDynamicComponent } from './components/property-edit-dynamic/property-edit-dynamic.component';
 
 const routes: Routes = [
 	{
@@ -13,10 +14,15 @@ const routes: Routes = [
 		path: 'home',
 		component: RequirementOptimizerComponent,
 	},
-    {
-        path: 'shortcut',
-        component: PropertyEditComponent,
-    },
+	{
+		path: 'shortcut',
+		component: PropertyEditComponent,
+	},
+
+	{
+		path: 'dynamic',
+		component: PropertyEditDynamicComponent,
+	},
 ];
 
 @NgModule({
