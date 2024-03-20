@@ -12,11 +12,11 @@ export class DashboardService {
 
 	constructor(private http: HttpClient) { }
 
-	updateScenarioResponse(scenarioId: string, responseIndex: number, predicates: Predicate[]) {
+	updateScenarioResponse(simId: string, responseIndex: number, predicates: Predicate[]) {
 		console.log(JSON.stringify(predicates))
 		return this.http.get(DASBOARD_SCENARIO_REFINEMENT_URL, {
 			params: {
-				scenario_id: scenarioId,
+				sim_id: simId,
 				response_index: responseIndex,
 				predicates: JSON.stringify(predicates),
 			}

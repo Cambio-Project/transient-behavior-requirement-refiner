@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { DashboardService } from 'src/app/core/services/dashboard.service';
 import { DataService } from 'src/app/core/services/data.service';
 import { ValidationService } from 'src/app/core/services/validation.service';
@@ -20,27 +21,59 @@ export class PropertyEditDynamicComponent implements OnInit {
 	predicates?: Predicate[];
 
 	simId?: string;
-	scenarioId?: string;
 	responseIndex?: number;
 
 	propertyValidationResponse: ValidationResponse | null = null;
 
 	constructor(
+		private route: ActivatedRoute,
 		private dataSvc: DataService,
 		private validationSvc: ValidationService,
 		private dashboardSvc: DashboardService,
 	) { }
 
 	ngOnInit(): void {
-		this.initHardCodedData();
+		this.getParameters();
+		//this.initHardCodedData();
 	}
 
-	async initHardCodedData() {
+	async getParameters() {
+		this.route.queryParams.subscribe(async params => {
+			let address = params["file-address"] || "assets/csv";
+			let filename = params["file"];
+
+			this.simId = params["sim_id"];
+			this.responseIndex = params["response_index"];
+			this.psp = {
+				sel: params["sel"],
+				tbvTimed: params["tbv_timed"],
+			}
+			this.predicates = JSON.parse(params["predicates"]);
+
+			console.log('simId', this.simId)
+			console.log('responseIndex', this.responseIndex)
+			console.log('sel', this.psp.sel)
+			console.log('tbvTimed', this.psp.tbvTimed)
+			console.log('predicates', this.predicates)
+
+			this.pspElements = getPSPElementsFromSEL(this.psp.sel);
+
+			if (!!filename == !!this.simId) {
+				throw new Error("Either provide sim_id or file name, not both or none.")
+			}
+			if (this.simId) {
+				address = `${address}/${this.simId}`
+				filename = "_combined.csv"
+			}
+			this.dataset = await this.dataSvc.parseCsvFileFromAddress(address, filename);
+		})
+	}
+
+	/* async initHardCodedData() {
 		// CSV
-		await this.loadCsvFileFromAssets('chaos-exp-1-trace.csv');
+		this.dataset = await this.dataSvc.parseCsvFileFromAddress('assets/csv', 'chaos-exp-1-trace.csv');
 
 		// Scenario
-		this.scenarioId = '678';
 		this.simId = '12345';
 		this.responseIndex = 0;
 
@@ -67,11 +100,7 @@ export class PropertyEditDynamicComponent implements OnInit {
 			}
 		];
 		this.validateProperty();
-	}
-
-	async loadCsvFileFromAssets(fileName: string) {
-		this.dataset = await this.dataSvc.parseCsvFileFromAssets(fileName);
-	}
+	} */
 
 	predicatesValid(predicates?: Predicate[]) {
 		return !predicates?.find(predicate => hasNullOrEmptyProperty(predicate));
@@ -90,8 +119,8 @@ export class PropertyEditDynamicComponent implements OnInit {
 	}
 
 	onConfirmRefinement() {
-		if (this.scenarioId == null || this.responseIndex == null || this.predicates == null) return;
-		this.dashboardSvc.updateScenarioResponse(this.scenarioId, this.responseIndex, this.predicates).subscribe(res => {
+		if (this.simId == null || this.responseIndex == null || this.predicates == null) return;
+		this.dashboardSvc.updateScenarioResponse(this.simId, this.responseIndex, this.predicates).subscribe(res => {
 			console.log(res);
 		})
 	}
