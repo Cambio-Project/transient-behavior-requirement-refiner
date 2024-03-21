@@ -13,8 +13,8 @@ import { Universality } from 'src/app/shared/psp/sel/patterns/occurence/universa
 import { TimeBound } from 'src/app/shared/psp/constraints/time-bound';
 import { Predicate } from 'src/app/modules/requirement-optimizer/components/property-edit-dynamic/property-edit-dynamic.component';
 
-//const VERIFIER_URL = "http://localhost:5000";  // local
-const VERIFIER_URL = "http://localhost:8083";  // docker
+const VERIFIER_URL = "http://localhost:5000";  // local
+//const VERIFIER_URL = "http://localhost:8083";  // docker
 
 @Injectable({
 	providedIn: 'root'
@@ -91,13 +91,13 @@ export class ValidationService {
 			}
 		});
 
+		console.log('validatePredicate');
 		console.log(request)
 
 		return this.sendRequest("monitor", request, null as any, dataset.file);
 	}
 
 	async validatePropertyDynamic(dataset: Dataset, tbv: string, predicates: Predicate[]) {
-		console.log('validateProperty');
 
 		if (!tbv || !predicates) {
 			throw new Error('Invalid Property');
@@ -122,11 +122,38 @@ export class ValidationService {
 			}
 		});
 
+		console.log('validateProperty');
 		console.log(request)
 
 		return this.sendRequest("monitor", request, null as any, dataset.file).then(validationResponse => {
 			return validationResponse;
 		});
+	}
+
+	async refinePredicateRemoteDynamic(dataset: Dataset, tbv: string, predicates: Predicate[], predicateName: string, measurementSource: string): Promise<PredicateRefinementResponse> {
+
+		const predicatesFormatted = predicates.map(predicate => {
+			return {
+				...predicate,
+				predicate_comparison_value: "" + predicate.predicate_comparison_value
+			}
+		})
+
+		const request = JSON.stringify({
+			"behavior_description": "description",
+			"specification": tbv,
+			"specification_type": "tbv",
+			"predicates_info": predicatesFormatted,
+			"measurement_source": "csv",
+			"measurement_points": dataset.measurementPoints,
+		});
+
+		return this.sendPredicateRefinementRequest(
+			request,
+			dataset,
+			predicateName,
+			measurementSource
+		)
 	}
 
 	async refineTimeboundRemote(dataset: Dataset, property: Property): Promise<TimeBound | null> {

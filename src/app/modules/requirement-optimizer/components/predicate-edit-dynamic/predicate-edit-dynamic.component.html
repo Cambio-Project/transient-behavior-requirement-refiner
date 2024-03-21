@@ -1,9 +1,9 @@
 <mat-card>
 	<mat-card-title>
-		{{ '{' + predicateForm.value.predicate_name + '}' }}
-		<!-- <button (click)="onClickRefinement()" mat-icon-button [disabled]="!property?.valid || !requiresComparisonValue(logicOperator.value)" color="primary" aria-label="Requirement Refinement" style="position: absolute; top: 8px; right: 64px;">
+		{{ '{' + pspElement?.predicateName + '}' }}
+		<button (click)="onClickRefinement()" mat-icon-button [disabled]="!requiresComparisonValue(logicOperator.value)" color="primary" aria-label="Requirement Refinement" style="position: absolute; top: 8px; right: 64px;">
 			<mat-icon>settings_suggest</mat-icon>
-		</button> -->
+		</button>
 		<button mat-icon-button (click)="toggleEditForm()" style="position: absolute; top: 8px; right: 12px;" aria-label="Edit">
 			<mat-icon>edit</mat-icon>
 		</button>

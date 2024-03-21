@@ -6,6 +6,8 @@ import { ValidationResponse } from 'src/app/shared/models/validation-response';
 import { PSP, PSPElement, Predicate } from '../property-edit-dynamic/property-edit-dynamic.component';
 import { debounceTime } from 'rxjs';
 import { ValidationService } from 'src/app/core/services/validation.service';
+import { MatDialog } from '@angular/material/dialog';
+import { PredicateRefinementDynamicComponent } from '../predicate-refinement-dynamic/predicate-refinement-dynamic.component';
 
 @Component({
 	selector: 'app-predicate-edit-dynamic',
@@ -18,7 +20,7 @@ export class PredicateEditDynamicComponent implements OnInit {
 	@Input() psp?: PSP;
 	@Input() pspElement?: PSPElement;
 	@Input() predicates?: Predicate[];
-	@Output() predicateChange = new EventEmitter<Predicate>();
+	@Output() predicatesChange = new EventEmitter<Predicate[]>();
 
 	@ViewChild("myPlot") myPlot?: ElementRef
 
@@ -29,7 +31,7 @@ export class PredicateEditDynamicComponent implements OnInit {
 	logicOperator: FormControl = new FormControl(null, [Validators.required])
 
 	predicateForm: FormGroup = new FormGroup({
-		predicate_name: new FormControl(null, [Validators.required]),
+		predicate_name: new FormControl({ value: null, disabled: false }, [Validators.required]),
 		measurement_source: new FormControl(null, [Validators.required]),
 		predicate_logic: this.logicOperator,
 		predicate_comparison_value: this.comparisonValue,
@@ -38,7 +40,10 @@ export class PredicateEditDynamicComponent implements OnInit {
 	LOGIC_OPERATOR_OPTIONS = LOGIC_OPERATOR_OPTIONS;
 	requiresComparisonValue = requiresComparisonValue;
 
-	constructor(private validationSvc: ValidationService) { }
+	constructor(
+		private dialog: MatDialog,
+		private validationSvc: ValidationService,
+	) { }
 
 	ngOnInit(): void {
 		this.initForm();
@@ -53,10 +58,18 @@ export class PredicateEditDynamicComponent implements OnInit {
 			.pipe(debounceTime(400))
 			.subscribe(res => {
 				if (this.predicates) {
-					const i = this.getPredicateIndex(this.predicates, this.predicateForm.value.predicate_name);
+
+					/* const i = this.getPredicateIndex(this.predicates, this.predicateForm.value.predicate_name);
 					this.predicates[i] = this.predicateForm.value;
 					this.validatePredicate();
-					this.predicateChange.emit(this.predicateForm.value);
+					this.predicatesChange.emit(this.predicateForm.value); */
+
+					const i = this.getPredicateIndex(this.predicates, this.pspElement?.predicateName!);
+					if (i === -1) return;
+					this.predicates[i] = this.predicateForm.value;
+					this.validatePredicate();
+					console.log('EMIT', this.predicates)
+					this.predicatesChange.emit(this.predicates);
 				}
 			});
 	}
@@ -101,21 +114,23 @@ export class PredicateEditDynamicComponent implements OnInit {
 
 	validatePredicate() {
 		if (this.dataset && this.predicateForm.valid) {
-			const predicateSpecification = this.pspElement?.text!;
+			const predicateSpecification = this.pspElement?.specification!;
 			const predicate = this.predicateForm.value;
 			this.validationSvc.validatePredicateDynamic(this.dataset, predicateSpecification, predicate).then(validationResponse => this.validationResponse = validationResponse);
 			//this.eventChange.emit(this.event);
 		}
 	}
 
-	/* 
+
 	async onClickRefinement() {
-		const dialogRef = this.dialog.open(PredicateRefinementComponent, {
+		const dialogRef = this.dialog.open(PredicateRefinementDynamicComponent, {
 			data: {
 				dataset: this.dataset,
-				predicateName: this.predicateForm.value.fName,
-				predicateLogicOperator: this.predicateForm.value.fLogicOperator,
-				property: this.property,
+				tbv: this.psp?.tbvTimed,
+				predicates: this.predicates,
+				predicateName: this.pspElement?.predicateName,
+				measurementSource: this.pspElement?.measurementSource,
+				predicateLogicOperator: this.predicateForm.value.predicate_logic,
 			},
 			width: '512px'
 		});
@@ -125,7 +140,7 @@ export class PredicateEditDynamicComponent implements OnInit {
 				this.predicateForm.patchValue({ fComparisonValue: comparisonValue });
 			}
 		});
-	} */
+	}
 
 	mouseEnterEvent() {
 		let plots = document.querySelectorAll<HTMLElement>(".plotMarker")

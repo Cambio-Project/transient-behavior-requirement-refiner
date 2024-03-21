@@ -9,7 +9,7 @@
 		</div>
 		<div *ngIf="pspElement.type === 'predicate'" class="row" style="margin-bottom: 15px;">
 			<div class="col">
-				<app-predicate-edit-dynamic [dataset]="dataset" [psp]="psp" [pspElement]="pspElement" [predicates]="predicates" (predicateChange)="onPredicateChange($event)"></app-predicate-edit-dynamic>
+				<app-predicate-edit-dynamic [dataset]="dataset" [psp]="psp" [pspElement]="pspElement" [(predicates)]="predicates" (predicatesChange)="onPredicateChange($event)"></app-predicate-edit-dynamic>
 			</div>
 		</div>
 	</ng-container>

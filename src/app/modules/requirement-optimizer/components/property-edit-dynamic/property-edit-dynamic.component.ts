@@ -48,13 +48,12 @@ export class PropertyEditDynamicComponent implements OnInit {
 				sel: params["sel"],
 				tbvTimed: params["tbv_timed"],
 			}
-			this.predicates = JSON.parse(params["predicates"]);
-
-			console.log('simId', this.simId)
-			console.log('responseIndex', this.responseIndex)
-			console.log('sel', this.psp.sel)
-			console.log('tbvTimed', this.psp.tbvTimed)
-			console.log('predicates', this.predicates)
+			this.predicates = JSON.parse(params["predicates"]).map((predicate: Predicate) => {
+				return {
+					...predicate,
+					predicate_comparison_value: +predicate.predicate_comparison_value!,
+				}
+			})
 
 			this.pspElements = getPSPElementsFromSEL(this.psp.sel);
 
@@ -66,6 +65,7 @@ export class PropertyEditDynamicComponent implements OnInit {
 				filename = "_combined.csv"
 			}
 			this.dataset = await this.dataSvc.parseCsvFileFromAddress(address, filename);
+			this.validateProperty();
 		})
 	}
 
@@ -114,7 +114,7 @@ export class PropertyEditDynamicComponent implements OnInit {
 		}
 	}
 
-	onPredicateChange(predicate: Predicate) {
+	onPredicateChange(predicates: Predicate[]) {
 		this.validateProperty();
 	}
 
@@ -134,6 +134,8 @@ export interface PSP {
 
 export interface PSPElement {
 	predicateName: string | null;
+	measurementSource: string | null;
+	specification: string | null;
 	text: string;
 	type: 'predicate' | 'text';
 }
@@ -154,14 +156,21 @@ export const getPSPElementsFromSEL = (sel: string): PSPElement[] => {
 
 	return elements.map(s => {
 		if (s.charAt(0) === '{') {
+			const predicateName = extractPredicateName(s);
+			const measurementSource = extractMeasurementSource(s);
+			const specification = `${predicateName}(${measurementSource})`;
 			return {
-				predicateName: extractPredicateName(s),
+				predicateName,
+				measurementSource,
+				specification,
 				text: s,
 				type: 'predicate',
 			}
 		} else {
 			return {
 				predicateName: null,
+				measurementSource: null,
+				specification: null,
 				text: s,
 				type: 'text',
 			}
@@ -175,14 +184,20 @@ const extractPredicateName = (str: string) => {
 	return match ? match[1] : null;
 }
 
+const extractMeasurementSource = (str: string) => {
+	let regex = /\(([^)]+)\)/;
+	let match = str.match(regex);
+	return match ? match[1] : null;
+}
+
 function hasNullOrEmptyProperty(obj: any) {
 	for (let key in obj) {
 		if (obj.hasOwnProperty(key)) {
 			let value = obj[key];
 			if (value === null || value === undefined || value === '') {
-				return true; // Found a property that is null, undefined, or an empty string
+				return true;
 			}
 		}
 	}
-	return false; // No such property found
+	return false;
 }

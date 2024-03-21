@@ -17,6 +17,7 @@ import { PatternOccurrenceAbsenceComponent } from './components/property-edit/co
 import { PatternOccurrenceUniversalityComponent } from './components/property-edit/components/pattern-occurrence-universality/pattern-occurrence-universality.component';
 import { PropertyEditDynamicComponent } from './components/property-edit-dynamic/property-edit-dynamic.component';
 import { PredicateEditDynamicComponent } from './components/predicate-edit-dynamic/predicate-edit-dynamic.component';
+import { PredicateRefinementDynamicComponent } from './components/predicate-refinement-dynamic/predicate-refinement-dynamic.component';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { PredicateEditDynamicComponent } from './components/predicate-edit-dynam
 		PatternOccurrenceUniversalityComponent,
 		PropertyEditDynamicComponent,
 		PredicateEditDynamicComponent,
+		PredicateRefinementDynamicComponent,
 	],
 	imports: [
 		CommonModule,

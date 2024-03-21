@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>Predicate Refinement ({{ predicateLogicOperator }})</h2>
+<mat-dialog-content class="mat-typography">
+	<mat-spinner *ngIf="isLoading" style="margin: 0 auto;"></mat-spinner>
+	<ng-container *ngIf="refinementResponse?.result">
+		<ng-container *ngFor="let result of refinementResponse!.result; let i = index;">
+			<div style="margin-bottom: 8px; margin-right: 8px; display: inline-block;">
+				<button mat-flat-button (click)="onConfirm(parseFloat(getFormattedValue(i)))" color="primary" [ngStyle]="result ? {'background-color': 'green'} : {'background-color': 'red'}">
+					{{ getFormattedValue(i) }}
+				</button>
+			</div>
+		</ng-container>
+	</ng-container>
+</mat-dialog-content>
+<mat-dialog-actions align="end" *ngIf="!isLoading">
+	<button mat-button mat-dialog-close>Cancel</button>
+</mat-dialog-actions>
