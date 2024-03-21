@@ -1,0 +1,19 @@
+<div [ngClass]="{ 'validation-result-true': propertyValidationResponse?.result === true, 'validation-result-false': propertyValidationResponse?.result === false}" style="padding: 15px;">
+	<ng-container *ngFor="let pspElement of pspElements">
+		<div *ngIf="pspElement.type === 'text'" class="row" style="margin-bottom: 15px;">
+			<div class="col-md-auto">
+				<mat-card>
+					<mat-card-title>{{ pspElement.text }}</mat-card-title>
+				</mat-card>
+			</div>
+		</div>
+		<div *ngIf="pspElement.type === 'predicate'" class="row" style="margin-bottom: 15px;">
+			<div class="col">
+				<app-predicate-edit-dynamic [dataset]="dataset" [psp]="psp" [pspElement]="pspElement" [(predicates)]="predicates" (predicatesChange)="onPredicateChange($event)"></app-predicate-edit-dynamic>
+			</div>
+		</div>
+	</ng-container>
+	<div style="margin: 30px 0;">
+		<button (click)="onConfirmRefinement()" mat-flat-button color="primary" [disabled]="!predicatesValid(predicates)">Save Refinement</button>
+	</div>
+</div>

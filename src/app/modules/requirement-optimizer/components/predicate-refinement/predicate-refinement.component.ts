@@ -3,8 +3,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ValidationService } from 'src/app/core/services/validation.service';
 import { LogicOperator } from 'src/app/shared/enums/logic-operator';
 import { Dataset } from 'src/app/shared/models/dataset';
-import { ValidationResponse } from 'src/app/shared/models/validation-response';
+import { PredicateRefinementResponse } from 'src/app/shared/models/validation-response';
 import { Property } from 'src/app/shared/psp/sel/property';
+import {interval} from "rxjs";
 
 @Component({
 	selector: 'app-predicate-refinement',
@@ -20,7 +21,7 @@ export class PredicateRefinementComponent implements OnInit {
 	predicateLogicOperator: LogicOperator;
 	property: Property;
 
-	validationResponses?: ValidationResponse[];
+	refinementResponse?: PredicateRefinementResponse;
 	isLoading: boolean = false;
 
 	constructor(
@@ -40,12 +41,22 @@ export class PredicateRefinementComponent implements OnInit {
 
 	async refinePredicate() {
 		this.isLoading = true;
-		this.validationResponses = await this.validationSvc.refinePredicate(this.dataset, this.predicateName, this.predicateLogicOperator, this.property);
+		this.refinementResponse = await this.validationSvc.refinePredicateRemote(
+            this.dataset, this.predicateName, this.property
+        );
 		this.isLoading = false;
 	}
 
 	onConfirm(comparisonValue: number) {
 		this.dialogRef.close(comparisonValue);
 	}
+
+    protected readonly interval = interval;
+    protected readonly parseFloat = parseFloat;
+
+    getFormattedValue(i: number): string {
+        const value = this.refinementResponse!.interval.start + i * this.refinementResponse!.interval.step;
+        return Number.isInteger(value) ? value.toString() : value.toFixed(5).replace(',', '.');
+    }
 
 }

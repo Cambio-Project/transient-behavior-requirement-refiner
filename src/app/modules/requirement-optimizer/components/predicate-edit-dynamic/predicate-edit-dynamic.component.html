@@ -1,0 +1,52 @@
+<mat-card>
+	<mat-card-title>
+		{{ '{' + pspElement?.predicateName + '}' }}
+		<button (click)="onClickRefinement()" mat-icon-button [disabled]="!requiresComparisonValue(logicOperator.value)" color="primary" aria-label="Requirement Refinement" style="position: absolute; top: 8px; right: 64px;">
+			<mat-icon>settings_suggest</mat-icon>
+		</button>
+		<button mat-icon-button (click)="toggleEditForm()" style="position: absolute; top: 8px; right: 12px;" aria-label="Edit">
+			<mat-icon>edit</mat-icon>
+		</button>
+	</mat-card-title>
+	<mat-card-content *ngIf="dataset && editFormExpaneded" style="margin-top: 24px;">
+		<form [formGroup]="predicateForm">
+			<div class="row">
+				<div class="col-md-4">
+					<mat-form-field class="full-width" appearance="fill">
+						<mat-label>Predicate Name</mat-label>
+						<input matInput formControlName="predicate_name">
+					</mat-form-field>
+
+					<mat-form-field class="full-width text-capitalize" appearance="fill">
+						<mat-label>Measurement Source</mat-label>
+						<mat-select formControlName="measurement_source">
+							<mat-option *ngFor="let metric of dataset.metricDefinitions" [value]="metric">
+								{{ metric }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+
+					<mat-form-field class="full-width text-capitalize" appearance="fill">
+						<mat-label>Logic Operator</mat-label>
+						<mat-select formControlName="predicate_logic">
+							<mat-option *ngFor="let logicOperator of LOGIC_OPERATOR_OPTIONS" [value]="logicOperator">
+								{{ logicOperator | logicOperator }}
+							</mat-option>
+						</mat-select>
+					</mat-form-field>
+
+					<mat-form-field class="full-width text-capitalize" appearance="fill">
+						<mat-label>Comparison Value</mat-label>
+						<input matInput formControlName="predicate_comparison_value" type="number">
+					</mat-form-field>
+
+				</div>
+				<div #myPlot class="col-md-8" (mouseenter)="mouseEnterEvent()" (mouseleave)="mouseLeaveEvent()" (mousemove)="mouseOverEvent($event)">
+					<div class="plotMarker"></div>
+					<app-graph-plotter [dataset]="dataset" [properties]="[predicateForm.value.measurement_source]" [comparisonValue]="predicateForm.value.predicate_comparison_value" [validationResponse]="validationResponse" [height]="280"></app-graph-plotter>
+				</div>
+			</div>
+		</form>
+	</mat-card-content>
+
+</mat-card>
