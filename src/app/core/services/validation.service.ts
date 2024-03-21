@@ -13,8 +13,8 @@ import { Universality } from 'src/app/shared/psp/sel/patterns/occurence/universa
 import { TimeBound } from 'src/app/shared/psp/constraints/time-bound';
 import { Predicate } from 'src/app/modules/requirement-optimizer/components/property-edit-dynamic/property-edit-dynamic.component';
 
-const VERIFIER_URL = "http://localhost:5000";  // local
-//const VERIFIER_URL = "http://localhost:8083";  // docker
+//const VERIFIER_URL = "http://localhost:5000";  // local
+const VERIFIER_URL = "http://localhost:8083";  // docker
 
 @Injectable({
 	providedIn: 'root'
