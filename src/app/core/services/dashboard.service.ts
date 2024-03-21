@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Predicate } from 'src/app/modules/requirement-optimizer/components/property-edit-dynamic/property-edit-dynamic.component';
 
 // TODO add support for docker network
-const DASBOARD_SCENARIO_REFINEMENT_URL = 'http://localhost:3000/api/updateScenarioPredicates';
+const DASBOARD_SCENARIO_REFINEMENT_URL = 'http://dashboard:3000/api/updateScenarioPredicates';
 
 @Injectable({
 	providedIn: 'root'
