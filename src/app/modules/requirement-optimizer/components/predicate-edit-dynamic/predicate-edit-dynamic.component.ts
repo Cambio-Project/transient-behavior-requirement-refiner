@@ -57,21 +57,23 @@ export class PredicateEditDynamicComponent implements OnInit {
 		this.predicateForm.valueChanges
 			.pipe(debounceTime(400))
 			.subscribe(res => {
-				if (this.predicates) {
-
-					/* const i = this.getPredicateIndex(this.predicates, this.predicateForm.value.predicate_name);
-					this.predicates[i] = this.predicateForm.value;
-					this.validatePredicate();
-					this.predicatesChange.emit(this.predicateForm.value); */
-
-					const i = this.getPredicateIndex(this.predicates, this.pspElement?.predicateName!);
-					if (i === -1) return;
-					this.predicates[i] = this.predicateForm.value;
-					this.validatePredicate();
-					console.log('EMIT', this.predicates)
-					this.predicatesChange.emit(this.predicates);
-				}
+				this.updatePredicate();
 			});
+	}
+
+	updatePredicate() {
+		if (this.predicates) {
+			/* const i = this.getPredicateIndex(this.predicates, this.predicateForm.value.predicate_name);
+			this.predicates[i] = this.predicateForm.value;
+			this.validatePredicate();
+			this.predicatesChange.emit(this.predicateForm.value); */
+			const i = this.getPredicateIndex(this.predicates, this.pspElement?.predicateName!);
+			if (i === -1) return;
+			this.predicates[i] = this.predicateForm.value;
+			this.validatePredicate();
+			console.log('EMIT', this.predicates)
+			this.predicatesChange.emit(this.predicates);
+		}
 	}
 
 	initForm() {
@@ -137,7 +139,8 @@ export class PredicateEditDynamicComponent implements OnInit {
 
 		dialogRef.afterClosed().subscribe((comparisonValue: number | null) => {
 			if (typeof comparisonValue === 'number' && comparisonValue !== null) {
-				this.predicateForm.patchValue({ fComparisonValue: comparisonValue });
+				this.predicateForm.patchValue({ predicate_comparison_value: comparisonValue });
+				this.updatePredicate();
 			}
 		});
 	}

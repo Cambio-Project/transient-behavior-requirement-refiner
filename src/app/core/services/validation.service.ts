@@ -31,7 +31,7 @@ export class ValidationService {
 		const request = JSON.stringify({
 			"behavior_description": "description",
 			"specification": predicate.predicateSpecification,
-			"specification_type": "mtl",
+			"specification_type": "tbv",
 			"predicates_info": [
 				predicate.predicateInfo
 			],
@@ -80,7 +80,7 @@ export class ValidationService {
 		const request = JSON.stringify({
 			"behavior_description": "description",
 			"specification": predicateSpecification,
-			"specification_type": "mtl",
+			"specification_type": "tbv",
 			"predicates_info": [
 				predicateFormatted
 			],
