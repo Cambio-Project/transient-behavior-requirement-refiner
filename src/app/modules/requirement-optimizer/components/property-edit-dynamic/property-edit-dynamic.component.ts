@@ -8,68 +8,66 @@ import { Dataset } from 'src/app/shared/models/dataset';
 import { ValidationResponse } from 'src/app/shared/models/validation-response';
 
 @Component({
-	selector: 'app-property-edit-dynamic',
-	templateUrl: './property-edit-dynamic.component.html',
-	styleUrls: ['./property-edit-dynamic.component.scss']
+    selector: 'app-property-edit-dynamic',
+    templateUrl: './property-edit-dynamic.component.html',
+    styleUrls: ['./property-edit-dynamic.component.scss'],
 })
 export class PropertyEditDynamicComponent implements OnInit {
+    @Input() dataset: Dataset | null = null;
 
-	@Input() dataset: Dataset | null = null;
+    psp?: PSP;
+    pspElements?: PSPElement[];
+    predicates?: Predicate[];
 
-	psp?: PSP;
-	pspElements?: PSPElement[];
-	predicates?: Predicate[];
+    simId?: string;
+    responseIndex?: number;
 
-	simId?: string;
-	responseIndex?: number;
+    propertyValidationResponse: ValidationResponse | null = null;
 
-	propertyValidationResponse: ValidationResponse | null = null;
+    constructor(
+        private route: ActivatedRoute,
+        private dataSvc: DataService,
+        private validationSvc: ValidationService,
+        private dashboardSvc: DashboardService
+    ) {}
 
-	constructor(
-		private route: ActivatedRoute,
-		private dataSvc: DataService,
-		private validationSvc: ValidationService,
-		private dashboardSvc: DashboardService,
-	) { }
+    ngOnInit(): void {
+        this.getParameters();
+        //this.initHardCodedData();
+    }
 
-	ngOnInit(): void {
-		this.getParameters();
-		//this.initHardCodedData();
-	}
+    async getParameters() {
+        this.route.queryParams.subscribe(async (params) => {
+            let address = params['file-address'] || 'assets/csv';
+            let filename = params['file'];
 
-	async getParameters() {
-		this.route.queryParams.subscribe(async params => {
-			let address = params["file-address"] || "assets/csv";
-			let filename = params["file"];
+            this.simId = params['sim_id'];
+            this.responseIndex = params['response_index'];
+            this.psp = {
+                sel: params['sel'],
+                tbvTimed: params['tbv_timed'],
+            };
+            this.predicates = JSON.parse(params['predicates']).map(
+                (predicate: Predicate) => {
+                    return {
+                        ...predicate,
+                        predicate_comparison_value:
+                            +predicate.predicate_comparison_value!,
+                    };
+                }
+            );
 
-			this.simId = params["sim_id"];
-			this.responseIndex = params["response_index"];
-			this.psp = {
-				sel: params["sel"],
-				tbvTimed: params["tbv_timed"],
-			}
-			this.predicates = JSON.parse(params["predicates"]).map((predicate: Predicate) => {
-				return {
-					...predicate,
-					predicate_comparison_value: +predicate.predicate_comparison_value!,
-				}
-			})
+            this.pspElements = getPSPElementsFromSEL(this.psp.sel);
 
-			this.pspElements = getPSPElementsFromSEL(this.psp.sel);
+            this.dataset = await this.dataSvc.parseCsvFileFromAddress(
+                address,
+                filename
+            );
+            this.validateProperty();
+        });
+    }
 
-			if (!!filename == !!this.simId) {
-				throw new Error("Either provide sim_id or file name, not both or none.")
-			}
-			if (this.simId) {
-				address = `${address}/${this.simId}`
-				filename = "_combined.csv"
-			}
-			this.dataset = await this.dataSvc.parseCsvFileFromAddress(address, filename);
-			this.validateProperty();
-		})
-	}
-
-	/* async initHardCodedData() {
+    /* async initHardCodedData() {
 		// CSV
 		this.dataset = await this.dataSvc.parseCsvFileFromAddress('assets/csv', 'chaos-exp-1-trace.csv');
 
@@ -102,102 +100,126 @@ export class PropertyEditDynamicComponent implements OnInit {
 		this.validateProperty();
 	} */
 
-	predicatesValid(predicates?: Predicate[]) {
-		return !predicates?.find(predicate => hasNullOrEmptyProperty(predicate));
-	}
+    predicatesValid(predicates?: Predicate[]) {
+        return !predicates?.find((predicate) =>
+            hasNullOrEmptyProperty(predicate)
+        );
+    }
 
-	async validateProperty() {
-		if (this.dataset && this.psp && this.predicates && this.predicatesValid(this.predicates)) {
-			this.validationSvc.validatePropertyDynamic(this.dataset, this.psp?.tbvTimed, this.predicates).then(validationResponse => {
-				this.propertyValidationResponse = validationResponse;
-			});
-		}
-	}
+    async validateProperty() {
+        if (
+            this.dataset &&
+            this.psp &&
+            this.predicates &&
+            this.predicatesValid(this.predicates)
+        ) {
+            this.validationSvc
+                .validatePropertyDynamic(
+                    this.dataset,
+                    this.psp?.tbvTimed,
+                    this.predicates
+                )
+                .then((validationResponse) => {
+                    this.propertyValidationResponse = validationResponse;
+                });
+        }
+    }
 
-	onPredicateChange(predicates: Predicate[]) {
-		this.validateProperty();
-	}
+    onPredicateChange(predicates: Predicate[]) {
+        this.validateProperty();
+    }
 
-	onConfirmRefinement() {
-		if (this.simId == null || this.responseIndex == null || this.predicates == null) return;
-		this.dashboardSvc.updateScenarioResponse(this.simId, this.responseIndex, this.predicates).subscribe(res => {
-			console.log(res);
-		})
-	}
-
+    onConfirmRefinement() {
+        if (
+            this.simId == null ||
+            this.responseIndex == null ||
+            this.predicates == null
+        )
+            return;
+        this.dashboardSvc
+            .updateScenarioResponse(
+                this.simId,
+                this.responseIndex,
+                this.predicates
+            )
+            .subscribe((res) => {
+                console.log(res);
+            });
+    }
 }
 
 export interface PSP {
-	sel: string;
-	tbvTimed: string;
+    sel: string;
+    tbvTimed: string;
 }
 
 export interface PSPElement {
-	predicateName: string | null;
-	measurementSource: string | null;
-	specification: string | null;
-	text: string;
-	type: 'predicate' | 'text';
+    predicateName: string | null;
+    measurementSource: string | null;
+    specification: string | null;
+    text: string;
+    type: 'predicate' | 'text';
 }
 
 export interface Predicate {
-	predicate_name?: string;
-	predicate_logic?: LogicOperator;
-	measurement_source?: string;
-	predicate_comparison_value?: number;
+    predicate_name?: string;
+    predicate_logic?: LogicOperator;
+    measurement_source?: string;
+    predicate_comparison_value?: number;
 }
 
 export const getPSPElementsFromSEL = (sel: string): PSPElement[] => {
-	const SEL_TO_PSP_REGEX = /(?=\{[^{}]+\}|\[[^\[\]]+\])/g;
+    const SEL_TO_PSP_REGEX = /(?=\{[^{}]+\}|\[[^\[\]]+\])/g;
 
-	const elements = sel.split(SEL_TO_PSP_REGEX)
-		.map(s => s.trim())
-		.filter(s => s);
+    const elements = sel
+        .split(SEL_TO_PSP_REGEX)
+        .map((s) => s.trim())
+        .filter((s) => s);
 
-	return elements.map(s => {
-		if (s.charAt(0) === '{') {
-			const predicateName = extractPredicateName(s);
-			const measurementSource = extractMeasurementSource(s);
-			const specification = `${predicateName}(${measurementSource})`;
-			return {
-				predicateName,
-				measurementSource,
-				specification,
-				text: s,
-				type: 'predicate',
-			}
-		} else {
-			return {
-				predicateName: null,
-				measurementSource: null,
-				specification: null,
-				text: s,
-				type: 'text',
-			}
-		}
-	});
-}
+    return elements.map((s) => {
+        if (s.charAt(0) === '{') {
+            const predicateName = extractPredicateName(s);
+            const measurementSource = extractMeasurementSource(s);
+            const specification = `${predicateName}(${measurementSource})`;
+            return {
+                predicateName,
+                measurementSource,
+                specification,
+                text: s,
+                type: 'predicate',
+            };
+        } else {
+            return {
+                predicateName: null,
+                measurementSource: null,
+                specification: null,
+                text: s,
+                type: 'text',
+            };
+        }
+    });
+};
 
 const extractPredicateName = (str: string) => {
-	let regex = /{([A-Za-z0-9]+)\(/;
-	let match = str.match(regex);
-	return match ? match[1] : null;
-}
+    let regex = /{([A-Za-z0-9]+)\(/;
+    let match = str.match(regex);
+    return match ? match[1] : null;
+};
 
 const extractMeasurementSource = (str: string) => {
-	let regex = /\(([^)]+)\)/;
-	let match = str.match(regex);
-	return match ? match[1] : null;
-}
+    let regex = /\(([^)]+)\)/;
+    let match = str.match(regex);
+    return match ? match[1] : null;
+};
 
 function hasNullOrEmptyProperty(obj: any) {
-	for (let key in obj) {
-		if (obj.hasOwnProperty(key)) {
-			let value = obj[key];
-			if (value === null || value === undefined || value === '') {
-				return true;
-			}
-		}
-	}
-	return false;
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            let value = obj[key];
+            if (value === null || value === undefined || value === '') {
+                return true;
+            }
+        }
+    }
+    return false;
 }
