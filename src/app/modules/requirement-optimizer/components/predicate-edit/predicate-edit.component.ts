@@ -26,7 +26,7 @@ export class PredicateEditComponent implements OnInit {
 	@ViewChild("myPlot") myPlot?: ElementRef
 
 	validationResponse?: ValidationResponse;
-	editFormExpaneded: boolean = false;
+	editFormExpaneded: boolean = true;
 
 	comparisonValue: FormControl = new FormControl(null, [Validators.required])
 	logicOperator: FormControl = new FormControl(null, [Validators.required])
