@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {AfterContentInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LOGIC_OPERATOR_OPTIONS, requiresComparisonValue } from 'src/app/shared/enums/logic-operator';
 import { Dataset } from 'src/app/shared/models/dataset';
@@ -14,7 +14,7 @@ import { PredicateRefinementDynamicComponent } from '../predicate-refinement-dyn
 	templateUrl: './predicate-edit-dynamic.component.html',
 	styleUrls: ['./predicate-edit-dynamic.component.scss']
 })
-export class PredicateEditDynamicComponent implements OnInit {
+export class PredicateEditDynamicComponent implements OnInit, AfterContentInit {
 
 	@Input() dataset: Dataset | null = null;
 	@Input() psp?: PSP;
@@ -45,8 +45,11 @@ export class PredicateEditDynamicComponent implements OnInit {
 		private validationSvc: ValidationService,
 	) { }
 
+    ngAfterContentInit(): void {
+        this.initForm();
+    }
+
 	ngOnInit(): void {
-		this.initForm();
 
 		this.logicOperator.valueChanges
 			.pipe(debounceTime(400))
@@ -79,7 +82,7 @@ export class PredicateEditDynamicComponent implements OnInit {
 	initForm() {
 		const predicate = this.getPredicate(this.pspElement?.predicateName);
 		if (predicate) {
-			this.predicateForm.patchValue(predicate);
+            this.predicateForm.patchValue(predicate);
 			this.validatePredicate();
 		}
 	}
@@ -115,8 +118,8 @@ export class PredicateEditDynamicComponent implements OnInit {
 	}
 
 	validatePredicate() {
-		if (this.dataset && this.predicateForm.valid) {
-			const predicateSpecification = this.pspElement?.specification!;
+        if (this.dataset && this.predicateForm.valid) {
+            const predicateSpecification = this.pspElement?.specification!;
 			const predicate = this.predicateForm.value;
 			this.validationSvc.validatePredicateDynamic(this.dataset, predicateSpecification, predicate).then(validationResponse => this.validationResponse = validationResponse);
 			//this.eventChange.emit(this.event);
