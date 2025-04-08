@@ -19,7 +19,7 @@ RUN corepack enable
 # Copy files from local machine to virtual directory in docker image
 COPY . .
 RUN pnpm install -g @angular/cli
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 RUN pnpm run build
 
 
