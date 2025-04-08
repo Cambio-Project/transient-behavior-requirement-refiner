@@ -15,12 +15,12 @@ RUN corepack enable
 # Copy files to virtual directory
 # COPY package.json package-lock.json ./
 # Run command in Virtual directory
-RUN npm cache clean --force
+# RUN npm cache clean --force
 # Copy files from local machine to virtual directory in docker image
 COPY . .
 RUN pnpm install -g @angular/cli
 RUN pnpm install
-RUN ng build
+RUN pnpm run build
 
 
 
