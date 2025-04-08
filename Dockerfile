@@ -3,17 +3,23 @@
 # Which version of Node image to use depends on project dependencies
 # This is needed to build and compile our code
 # while generating the docker image
-FROM node:20 AS build
+FROM node:20-slim AS build
 # Create a Virtual directory inside the docker image
 WORKDIR /dist/src/app
+
+# Activate pnpm
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
 # Copy files to virtual directory
 # COPY package.json package-lock.json ./
 # Run command in Virtual directory
 RUN npm cache clean --force
 # Copy files from local machine to virtual directory in docker image
 COPY . .
-RUN npm install -g @angular/cli
-RUN npm install
+RUN pnpm install -g @angular/cli
+RUN pnpm install
 RUN ng build
 
 
