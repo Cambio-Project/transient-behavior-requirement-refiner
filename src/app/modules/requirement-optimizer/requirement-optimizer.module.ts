@@ -18,6 +18,7 @@ import { PatternOccurrenceUniversalityComponent } from './components/property-ed
 import { PropertyEditDynamicComponent } from './components/property-edit-dynamic/property-edit-dynamic.component';
 import { PredicateEditDynamicComponent } from './components/predicate-edit-dynamic/predicate-edit-dynamic.component';
 import { PredicateRefinementDynamicComponent } from './components/predicate-refinement-dynamic/predicate-refinement-dynamic.component';
+import {PropertyPlotDynamicComponent} from "./components/property-plot-dynamic/property-plot-dynamic.component";
 
 
 @NgModule({
@@ -36,6 +37,7 @@ import { PredicateRefinementDynamicComponent } from './components/predicate-refi
 		PropertyEditDynamicComponent,
 		PredicateEditDynamicComponent,
 		PredicateRefinementDynamicComponent,
+        PropertyPlotDynamicComponent,
 	],
 	imports: [
 		CommonModule,

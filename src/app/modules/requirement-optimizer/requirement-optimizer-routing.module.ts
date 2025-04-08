@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { RequirementOptimizerComponent } from './requirement-optimizer.component';
 import { PropertyEditComponent } from "./components/property-edit/property-edit.component";
 import { PropertyEditDynamicComponent } from './components/property-edit-dynamic/property-edit-dynamic.component';
+import {PropertyPlotDynamicComponent} from "./components/property-plot-dynamic/property-plot-dynamic.component";
 
 const routes: Routes = [
 	{
@@ -23,6 +24,10 @@ const routes: Routes = [
 		path: 'dynamic',
 		component: PropertyEditDynamicComponent,
 	},
+    {
+        path: 'plot',
+        component: PropertyPlotDynamicComponent,
+    },
 ];
 
 @NgModule({

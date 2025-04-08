@@ -68,11 +68,10 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 
 	@Input() width: number = 640;
 	@Input() height: number = 320;
-
+	@Input() displayPlaceholder: boolean = true;
 
 	@ViewChild('chart') chart?: ElementRef;
 
-	displayPlaceholder: boolean = true;
 
 	constructor() { }
 
@@ -118,7 +117,7 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 					Plot.lineY(this.dataset?.data, { x: "time", y: property0 }),
 					Plot.lineY(this.dataset?.data, Plot.mapY((D: any) => D.map(secondaryYAxis), { x: "time", y: property1, stroke: secondaryYAxisColor }))
 				);
-			} else {				
+			} else {
 				marks.push(...properties.map(property => Plot.line(this.dataset?.data, { x: 'time', y: property })));
 				yAxis = {
 					label: properties.join(', '),

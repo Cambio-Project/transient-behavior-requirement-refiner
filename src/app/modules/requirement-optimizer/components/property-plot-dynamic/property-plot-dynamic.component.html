@@ -1,0 +1,5 @@
+<ng-container *ngIf="dataset" class="col-md-12">
+        <app-graph-plotter [dataset]="dataset" [properties]="[predicateForm.value.measurement_source]"
+                           [comparisonValue]="predicateForm.value.predicate_comparison_value" [height]="280"
+                           [width]="1200" [displayPlaceholder]="false"></app-graph-plotter>
+</ng-container>
