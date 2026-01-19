@@ -120,7 +120,7 @@ export class PropertyEditDynamicComponent implements OnInit {
                     this.dataset,
                     this.psp?.tbvTimed,
                     this.predicates,
-                    this.futureMtl
+                    this.futureMtl!
                 )
                 .then((validationResponse) => {
                     this.propertyValidationResponse = validationResponse;

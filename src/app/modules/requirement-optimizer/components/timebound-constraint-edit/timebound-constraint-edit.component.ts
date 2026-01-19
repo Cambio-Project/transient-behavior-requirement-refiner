@@ -25,7 +25,7 @@ export class TimeboundConstraintEditComponent implements OnInit {
 	@Input() dataset: Dataset | null = null;
 	@Input() property: Property | null = null;
 	@Input() timebound: TimeBound | null = null;
-	@Input() futureMtl: futureMtl | null = false;
+	@Input() futureMtl: boolean | null = false;
 	@Output() timeboundChange = new EventEmitter<TimeBound | null>();
 
 	timeboundSEL: string = 'no timebound constraint';

@@ -38,7 +38,7 @@ export class PredicateRefinementDynamicComponent implements OnInit {
 		this.predicateName = data.predicateName;
 		this.measurementSource = data.measurementSource;
 		this.predicateLogicOperator = data.predicateLogicOperator;
-		this.futureMtl = futureMtl;
+		this.futureMtl = data.futureMtl;
 	}
 
 	ngOnInit(): void {
