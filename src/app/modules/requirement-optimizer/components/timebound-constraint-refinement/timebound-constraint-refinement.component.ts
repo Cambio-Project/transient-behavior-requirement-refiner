@@ -24,16 +24,18 @@ export class TimeboundConstraintRefinementComponent implements OnInit {
 	dataset: Dataset;
 	property: Property;
 	isLoading: boolean = false;
+	futureMtl: boolean = false;
 
 	refinedTimebound?: TimeBound | null;
 
 	constructor(
 		private dialogRef: MatDialogRef<TimeboundConstraintRefinementComponent>,
-		@Inject(MAT_DIALOG_DATA) private data: { dataset: Dataset, property: Property },
+		@Inject(MAT_DIALOG_DATA) private data: { dataset: Dataset, property: Property, futureMtl: boolean },
 		private validationSvc: ValidationService,
 	) {
 		this.dataset = data.dataset;
 		this.property = data.property;
+		this.futureMtl = data.futureMtl;
 	}
 
 	ngOnInit(): void {
@@ -42,7 +44,7 @@ export class TimeboundConstraintRefinementComponent implements OnInit {
 
 	async refineTimeboundConstraint() {
 		this.isLoading = true;
-		this.refinedTimebound = await this.validationSvc.refineTimeboundRemote(this.dataset, this.property);
+		this.refinedTimebound = await this.validationSvc.refineTimeboundRemote(this.dataset, this.property, this.futureMtl);
 		this.isLoading = false;
 		this.plot(this.refinedTimebound);
 	}

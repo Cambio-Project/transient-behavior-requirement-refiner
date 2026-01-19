@@ -18,6 +18,7 @@ export class PredicateEditDynamicComponent implements OnInit, AfterContentInit {
 
 	@Input() dataset: Dataset | null = null;
 	@Input() psp?: PSP;
+	@Input() futureMtl?: boolean;
 	@Input() pspElement?: PSPElement;
 	@Input() predicates?: Predicate[];
 	@Output() predicatesChange = new EventEmitter<Predicate[]>();
@@ -121,7 +122,7 @@ export class PredicateEditDynamicComponent implements OnInit, AfterContentInit {
         if (this.dataset && this.predicateForm.valid) {
             const predicateSpecification = this.pspElement?.specification!;
 			const predicate = this.predicateForm.value;
-			this.validationSvc.validatePredicateDynamic(this.dataset, predicateSpecification, predicate).then(validationResponse => this.validationResponse = validationResponse);
+			this.validationSvc.validatePredicateDynamic(this.dataset, predicateSpecification, predicate, futureMtl).then(validationResponse => this.validationResponse = validationResponse);
 			//this.eventChange.emit(this.event);
 		}
 	}
@@ -136,6 +137,7 @@ export class PredicateEditDynamicComponent implements OnInit, AfterContentInit {
 				predicateName: this.pspElement?.predicateName,
 				measurementSource: this.pspElement?.measurementSource,
 				predicateLogicOperator: this.predicateForm.value.predicate_logic,
+				futureMtl: this.futureMtl,
 			},
 			width: '512px'
 		});

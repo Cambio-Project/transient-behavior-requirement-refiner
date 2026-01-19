@@ -42,7 +42,7 @@ export class PredicateRefinementComponent implements OnInit {
 	async refinePredicate() {
 		this.isLoading = true;
 		this.refinementResponse = await this.validationSvc.refinePredicateRemote(
-            this.dataset, this.predicateName, this.property
+            this.dataset, this.predicateName, this.property, false
         );
 		this.isLoading = false;
 	}

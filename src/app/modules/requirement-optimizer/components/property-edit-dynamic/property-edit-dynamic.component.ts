@@ -18,6 +18,7 @@ export class PropertyEditDynamicComponent implements OnInit {
     psp?: PSP;
     pspElements?: PSPElement[];
     predicates?: Predicate[];
+    futureMtl?: boolean;
 
     simId?: string;
     responseIndex?: number;
@@ -28,7 +29,7 @@ export class PropertyEditDynamicComponent implements OnInit {
         private route: ActivatedRoute,
         private dataSvc: DataService,
         private validationSvc: ValidationService,
-        private dashboardSvc: DashboardService
+        private dashboardSvc: DashboardService,
     ) {}
 
     ngOnInit(): void {
@@ -41,6 +42,7 @@ export class PropertyEditDynamicComponent implements OnInit {
             let address = params['file-address'] || 'assets/csv';
             let filename = params['file'];
 
+            this.futureMtl = params['future_mtl'];
             this.simId = params['sim_id'];
             this.responseIndex = params['response_index'];
             this.psp = {
@@ -117,7 +119,8 @@ export class PropertyEditDynamicComponent implements OnInit {
                 .validatePropertyDynamic(
                     this.dataset,
                     this.psp?.tbvTimed,
-                    this.predicates
+                    this.predicates,
+                    this.futureMtl
                 )
                 .then((validationResponse) => {
                     this.propertyValidationResponse = validationResponse;

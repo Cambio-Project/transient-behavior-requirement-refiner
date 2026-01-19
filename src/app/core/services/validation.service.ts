@@ -81,7 +81,8 @@ export class ValidationService {
     async validatePredicateDynamic(
         dataset: Dataset,
         predicateSpecification: string,
-        predicate: Predicate
+        predicate: Predicate,
+        futureMtl: boolean
     ): Promise<ValidationResponse> {
         if (!predicateSpecification || !predicate) {
             throw new Error('Invalid Predicate');
@@ -97,6 +98,7 @@ export class ValidationService {
             behavior_description: 'description',
             specification: predicateSpecification,
             specification_type: 'tbv',
+            future-mtl: futureMtl,
             predicates_info: [predicateFormatted],
             measurement_source: 'csv',
             measurement_points: dataset.measurementPoints,
@@ -114,7 +116,8 @@ export class ValidationService {
     async validatePropertyDynamic(
         dataset: Dataset,
         tbv: string,
-        predicates: Predicate[]
+        predicates: Predicate[],
+        futureMtl: boolean
     ) {
         if (!tbv || !predicates) {
             throw new Error('Invalid Property');
@@ -133,6 +136,7 @@ export class ValidationService {
             specification: tbv,
             specification_type: 'tbv',
             predicates_info: predicatesFormatted,
+            future-mtl: futureMtl,
             measurement_source: 'csv',
             measurement_points: dataset.measurementPoints,
             options: {
@@ -158,7 +162,8 @@ export class ValidationService {
         tbv: string,
         predicates: Predicate[],
         predicateName: string,
-        measurementSource: string
+        measurementSource: string,
+        futureMtl: boolean
     ): Promise<PredicateRefinementResponse> {
         const predicatesFormatted = predicates.map((predicate) => {
             return {
@@ -172,6 +177,7 @@ export class ValidationService {
             behavior_description: 'description',
             specification: tbv,
             specification_type: 'tbv',
+            future-mtl: futureMtl,
             predicates_info: predicatesFormatted,
             measurement_source: 'csv',
             measurement_points: dataset.measurementPoints,
@@ -187,7 +193,8 @@ export class ValidationService {
 
     async refineTimeboundRemote(
         dataset: Dataset,
-        property: Property
+        property: Property,
+        futureMtl: boolean
     ): Promise<TimeBound | null> {
         if (!property.propertySpecification || !property.predicateInfos) {
             throw new Error('Invalid Property');
@@ -197,6 +204,7 @@ export class ValidationService {
             behavior_description: 'description',
             specification: property.propertySpecification,
             specification_type: 'psp',
+            future-mtl: futureMtl,
             predicates_info: property.predicateInfos,
             measurement_source: 'csv',
             measurement_points: dataset.measurementPoints,
@@ -316,7 +324,8 @@ export class ValidationService {
     async refinePredicateRemote(
         dataset: Dataset,
         predicateName: string,
-        property: Property
+        property: Property,
+        futureMtl: boolean
     ): Promise<PredicateRefinementResponse> {
         if (!property.propertySpecification || !property.predicateInfos) {
             throw new Error('Invalid Property');
@@ -338,6 +347,7 @@ export class ValidationService {
             behavior_description: 'description',
             specification: property.propertySpecification,
             specification_type: 'psp',
+            future-mtl: futureMtl,
             predicates_info: property.predicateInfos,
             measurement_source: 'csv',
             measurement_points: dataset.measurementPoints,
