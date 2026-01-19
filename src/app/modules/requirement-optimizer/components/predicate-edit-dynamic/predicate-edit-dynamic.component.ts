@@ -122,7 +122,7 @@ export class PredicateEditDynamicComponent implements OnInit, AfterContentInit {
         if (this.dataset && this.predicateForm.valid) {
             const predicateSpecification = this.pspElement?.specification!;
 			const predicate = this.predicateForm.value;
-			this.validationSvc.validatePredicateDynamic(this.dataset, predicateSpecification, predicate, futureMtl).then(validationResponse => this.validationResponse = validationResponse);
+			this.validationSvc.validatePredicateDynamic(this.dataset, predicateSpecification, predicate, this.futureMtl!).then(validationResponse => this.validationResponse = validationResponse);
 			//this.eventChange.emit(this.event);
 		}
 	}
