@@ -94,6 +94,10 @@ export class ValidationService {
                 '' + predicate.predicate_comparison_value,
         };
 
+
+console.log('Value of futureMtl:', futureMtl);
+console.log('Type of futureMtl:', typeof futureMtl);
+
         const request = JSON.stringify({
             behavior_description: 'description',
             specification: predicateSpecification,
@@ -130,6 +134,9 @@ export class ValidationService {
                     '' + predicate.predicate_comparison_value,
             };
         });
+
+console.log('Value of futureMtl:', futureMtl);
+console.log('Type of futureMtl:', typeof futureMtl);
 
         const request = JSON.stringify({
             behavior_description: 'description',
@@ -173,6 +180,9 @@ export class ValidationService {
             };
         });
 
+console.log('Value of futureMtl:', futureMtl);
+console.log('Type of futureMtl:', typeof futureMtl);
+
         const request = JSON.stringify({
             behavior_description: 'description',
             specification: tbv,
@@ -199,6 +209,9 @@ export class ValidationService {
         if (!property.propertySpecification || !property.predicateInfos) {
             throw new Error('Invalid Property');
         }
+
+console.log('Value of futureMtl:', futureMtl);
+console.log('Type of futureMtl:', typeof futureMtl);
 
         const request = JSON.stringify({
             behavior_description: 'description',
@@ -342,6 +355,9 @@ export class ValidationService {
         }
 
         console.log(event);
+
+console.log('Value of futureMtl:', futureMtl);
+console.log('Type of futureMtl:', typeof futureMtl);
 
         const request = JSON.stringify({
             behavior_description: 'description',

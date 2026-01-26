@@ -42,7 +42,7 @@ export class PropertyEditDynamicComponent implements OnInit {
             let address = params['file-address'] || 'assets/csv';
             let filename = params['file'];
 
-            this.futureMtl = params['future_mtl'];
+            this.futureMtl = Boolean(params['future_mtl'] && params['future_mtl'] !== 'false');
             this.simId = params['sim_id'];
             this.responseIndex = params['response_index'];
             this.psp = {
