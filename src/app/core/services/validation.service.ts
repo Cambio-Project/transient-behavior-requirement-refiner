@@ -51,8 +51,6 @@ export class ValidationService {
     }
 
     async validateProperty(dataset: Dataset, property: Property) {
-        console.log('validateProperty');
-
         if (!property.propertySpecification || !property.predicateInfos) {
             throw new Error('Invalid Property');
         }
@@ -94,10 +92,6 @@ export class ValidationService {
                 '' + predicate.predicate_comparison_value,
         };
 
-
-console.log('Value of futureMtl:', futureMtl);
-console.log('Type of futureMtl:', typeof futureMtl);
-
         const request = JSON.stringify({
             behavior_description: 'description',
             specification: predicateSpecification,
@@ -110,9 +104,6 @@ console.log('Type of futureMtl:', typeof futureMtl);
                 create_plots: false,
             },
         });
-
-        console.log('validatePredicate');
-        console.log(request);
 
         return this.sendRequest('monitor', request, null as any, dataset.file);
     }
@@ -135,9 +126,6 @@ console.log('Type of futureMtl:', typeof futureMtl);
             };
         });
 
-console.log('Value of futureMtl:', futureMtl);
-console.log('Type of futureMtl:', typeof futureMtl);
-
         const request = JSON.stringify({
             behavior_description: 'description',
             specification: tbv,
@@ -150,9 +138,6 @@ console.log('Type of futureMtl:', typeof futureMtl);
                 create_plots: false,
             },
         });
-
-        console.log('validateProperty');
-        console.log(request);
 
         return this.sendRequest(
             'monitor',
@@ -180,9 +165,6 @@ console.log('Type of futureMtl:', typeof futureMtl);
             };
         });
 
-console.log('Value of futureMtl:', futureMtl);
-console.log('Type of futureMtl:', typeof futureMtl);
-
         const request = JSON.stringify({
             behavior_description: 'description',
             specification: tbv,
@@ -209,9 +191,6 @@ console.log('Type of futureMtl:', typeof futureMtl);
         if (!property.propertySpecification || !property.predicateInfos) {
             throw new Error('Invalid Property');
         }
-
-console.log('Value of futureMtl:', futureMtl);
-console.log('Type of futureMtl:', typeof futureMtl);
 
         const request = JSON.stringify({
             behavior_description: 'description',
@@ -354,11 +333,6 @@ console.log('Type of futureMtl:', typeof futureMtl);
             throw new Error('Invalid Event');
         }
 
-        console.log(event);
-
-console.log('Value of futureMtl:', futureMtl);
-console.log('Type of futureMtl:', typeof futureMtl);
-
         const request = JSON.stringify({
             behavior_description: 'description',
             specification: property.propertySpecification,
@@ -476,7 +450,7 @@ console.log('Type of futureMtl:', typeof futureMtl);
                     const refinementResponse = new PredicateRefinementResponse(
                         response
                     );
-                    console.log(refinementResponse);
+                    // console.log(refinementResponse);
                     resolve(refinementResponse);
                 })
                 .catch((error) => {
@@ -513,7 +487,7 @@ console.log('Type of futureMtl:', typeof futureMtl);
                         response,
                         validatedItem
                     );
-                    console.log(validationResponse);
+                    // console.log(validationResponse);
                     resolve(validationResponse);
                 })
                 .catch((error) => {
