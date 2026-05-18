@@ -80,7 +80,8 @@ export class ValidationService {
         dataset: Dataset,
         predicateSpecification: string,
         predicate: Predicate,
-        futureMtl: boolean
+        futureMtl: boolean,
+        endMode: boolean
     ): Promise<ValidationResponse> {
         if (!predicateSpecification || !predicate) {
             throw new Error('Invalid Predicate');
@@ -103,6 +104,7 @@ export class ValidationService {
             options: {
                 create_plots: false,
             },
+            endMode: endMode,
         });
 
         return this.sendRequest('monitor', request, null as any, dataset.file);
@@ -112,7 +114,8 @@ export class ValidationService {
         dataset: Dataset,
         tbv: string,
         predicates: Predicate[],
-        futureMtl: boolean
+        futureMtl: boolean,
+        endMode: boolean
     ) {
         if (!tbv || !predicates) {
             throw new Error('Invalid Property');
@@ -137,6 +140,7 @@ export class ValidationService {
             options: {
                 create_plots: false,
             },
+            endMode: endMode,
         });
 
         return this.sendRequest(
@@ -155,7 +159,8 @@ export class ValidationService {
         predicates: Predicate[],
         predicateName: string,
         measurementSource: string,
-        futureMtl: boolean
+        futureMtl: boolean,
+        endMode: boolean
     ): Promise<PredicateRefinementResponse> {
         const predicatesFormatted = predicates.map((predicate) => {
             return {
@@ -170,6 +175,7 @@ export class ValidationService {
             specification: tbv,
             specification_type: 'tbv',
             "future-mtl": futureMtl,
+            endMode: endMode,
             predicates_info: predicatesFormatted,
             measurement_source: 'csv',
             measurement_points: dataset.measurementPoints,
@@ -186,7 +192,8 @@ export class ValidationService {
     async refineTimeboundRemote(
         dataset: Dataset,
         property: Property,
-        futureMtl: boolean
+        futureMtl: boolean,
+        endMode: boolean
     ): Promise<TimeBound | null> {
         if (!property.propertySpecification || !property.predicateInfos) {
             throw new Error('Invalid Property');
@@ -197,6 +204,7 @@ export class ValidationService {
             specification: property.propertySpecification,
             specification_type: 'psp',
             "future-mtl": futureMtl,
+            endMode: endMode,
             predicates_info: property.predicateInfos,
             measurement_source: 'csv',
             measurement_points: dataset.measurementPoints,

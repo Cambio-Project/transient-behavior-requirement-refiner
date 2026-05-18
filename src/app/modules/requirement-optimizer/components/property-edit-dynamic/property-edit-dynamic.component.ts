@@ -19,6 +19,7 @@ export class PropertyEditDynamicComponent implements OnInit {
     pspElements?: PSPElement[];
     predicates?: Predicate[];
     futureMtl?: boolean;
+    endMode?: boolean;
 
     simId?: string;
     responseIndex?: number;
@@ -43,6 +44,7 @@ export class PropertyEditDynamicComponent implements OnInit {
             let filename = params['file'];
 
             this.futureMtl = Boolean(params['future_mtl'] && params['future_mtl'] !== 'false');
+            this.endMode = Boolean(params['end_mode'] && params['end_mode'] !== 'false');
             this.simId = params['sim_id'];
             this.responseIndex = params['response_index'];
             this.psp = {
@@ -120,7 +122,8 @@ export class PropertyEditDynamicComponent implements OnInit {
                     this.dataset,
                     this.psp?.tbvTimed,
                     this.predicates,
-                    this.futureMtl!
+                    this.futureMtl!,
+                    this.endMode!
                 )
                 .then((validationResponse) => {
                     this.propertyValidationResponse = validationResponse;

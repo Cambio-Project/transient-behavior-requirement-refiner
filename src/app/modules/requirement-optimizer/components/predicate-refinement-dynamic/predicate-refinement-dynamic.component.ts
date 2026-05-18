@@ -23,13 +23,14 @@ export class PredicateRefinementDynamicComponent implements OnInit {
 	measurementSource: string;
 	predicateLogicOperator: LogicOperator
 	futureMtl: boolean
+	endMode: boolean
 
 	refinementResponse?: PredicateRefinementResponse;
 	isLoading: boolean = false;
 
 	constructor(
 		private dialogRef: MatDialogRef<PredicateRefinementDynamicComponent>,
-		@Inject(MAT_DIALOG_DATA) data: { dataset: Dataset, tbv: string, predicates: Predicate[], predicateName: string, measurementSource: string, predicateLogicOperator: LogicOperator, futureMtl: boolean },
+		@Inject(MAT_DIALOG_DATA) data: { dataset: Dataset, tbv: string, predicates: Predicate[], predicateName: string, measurementSource: string, predicateLogicOperator: LogicOperator, futureMtl: boolean, endMode: boolean },
 		private validationSvc: ValidationService,
 	) {
 		this.dataset = data.dataset;
@@ -39,6 +40,7 @@ export class PredicateRefinementDynamicComponent implements OnInit {
 		this.measurementSource = data.measurementSource;
 		this.predicateLogicOperator = data.predicateLogicOperator;
 		this.futureMtl = data.futureMtl;
+		this.endMode = data.endMode;
 	}
 
 	ngOnInit(): void {
@@ -48,7 +50,7 @@ export class PredicateRefinementDynamicComponent implements OnInit {
 	async refinePredicate() {
 		this.isLoading = true;
 		this.refinementResponse = await this.validationSvc.refinePredicateRemoteDynamic(
-			this.dataset, this.tbv, this.predicates, this.predicateName, this.measurementSource, this.futureMtl
+			this.dataset, this.tbv, this.predicates, this.predicateName, this.measurementSource, this.futureMtl, this.endMode
 		);
 		this.isLoading = false;
 	}

@@ -26,6 +26,7 @@ export class TimeboundConstraintEditComponent implements OnInit {
 	@Input() property: Property | null = null;
 	@Input() timebound: TimeBound | null = null;
 	@Input() futureMtl: boolean | null = false;
+	@Input() endMode: boolean | null = false;
 	@Output() timeboundChange = new EventEmitter<TimeBound | null>();
 
 	timeboundSEL: string = 'no timebound constraint';
@@ -140,6 +141,7 @@ export class TimeboundConstraintEditComponent implements OnInit {
 				dataset: this.dataset,
 				property: this.property,
 				futureMtl: this.futureMtl,
+				endMode: this.endMode,
 			}
 		});
 
