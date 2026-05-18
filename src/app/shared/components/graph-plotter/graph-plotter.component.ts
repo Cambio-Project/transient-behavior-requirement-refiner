@@ -139,10 +139,12 @@ export class GraphPlotterComponent implements OnInit, AfterViewInit {
 				} else {
 					height = Math.max(...properties.map(property => this.dataset?.metricMax(property) || 0)) * 1.5;
 				}
+				const minIntervalValue = this.validationResponse.intervals[0].start;
+				const maxIntervalValue = this.validationResponse.intervals[this.validationResponse.intervals.length - 1].end;
 				this.validationResponse.intervals.forEach((interval, intervalIndex) => {
-					const arr = Array.from({ length: interval.end - interval.start + (intervalIndex > 0 ? 1 : 0) + (this.validationResponse?.intervals && intervalIndex === this.validationResponse?.intervals?.length - 1 ? 1 : 0 )}).map((val, i) => {
+					const arr = Array.from({ length: interval.end - interval.start + 1 + (this.validationResponse?.intervals && intervalIndex === this.validationResponse?.intervals?.length - 1 ? 1 : 0 )}).map((val, i) => {
 						return {
-							time: i + interval.start + (intervalIndex > 0 ? - 1 : 0),
+							time: Math.max(Math.min(i + interval.start - 0.5, maxIntervalValue), minIntervalValue),
 							height: height,
 						}
 					});
