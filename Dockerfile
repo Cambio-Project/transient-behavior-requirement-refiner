@@ -10,7 +10,7 @@ WORKDIR /dist/src/app
 # Activate pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@10 --activate
 
 # Copy files to virtual directory
 # COPY package.json package-lock.json ./
